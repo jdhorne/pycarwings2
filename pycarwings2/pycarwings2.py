@@ -4,8 +4,10 @@ import logging
 
 BASE_URL = "https://gdcportalgw.its-mo.com/orchestration_1111/gdc/"
 
-log = logging.getLogger("pycarwingsrest")
+log = logging.getLogger("pycarwings2")
 
+class CarwingsError(Exception):
+	pass
 
 class Session(object):
 	"""Maintains a connection to CARWINGS, refreshing it when needed"""
@@ -31,9 +33,13 @@ class Session(object):
 		except requests.exceptions.RequestException:
 			log.warning('HTTP Request failed')
 
-		log.debug("results: %s" % response.content)
+		j = json.loads(response.content)
 
-		return json.loads(response.content)
+		if "ErrorMessage" in j:
+			log.error("carwings error %s: %s" % (j["ErrorCode"], j["ErrorMessage"]) )
+			raise CarwingsError
+
+		return j
 
 
 	def connect(self):
@@ -96,6 +102,11 @@ class Leaf:
 			"tz": self.session.tz,
 			"resultKey": result_key,
 		})
+		# responseFlag will be "1" if a response has been returned; "0" otherwise
+		if response["responseFlag"] == "1":
+			return response
+
+		return None
 
 	def start_climate_control(self):
 		pass
