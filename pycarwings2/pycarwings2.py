@@ -1,4 +1,5 @@
 import requests
+from requests import Request, Session, RequestException
 import json
 import logging
 
@@ -17,20 +18,21 @@ class Session(object):
 		self.password = password
 		self.region_code = "NNA"
 		self.logged_in = False
-		self.connect()
 
 	def _request(self, endpoint, params):
-		log.info("invoking carwings API: %s" % (BASE_URL + endpoint))
+		req = Request('GET', url=BASE_URL + endpoint, params=params).prepare()
+
+		log.info("invoking carwings API: %s" % req.url)
+		log.debug("params: %s" % json.dumps(params, sort_keys=True, indent=3, separators=(',', ': ')))
+
 		try:
-			response = requests.get(
-				url=BASE_URL + endpoint,
-				params=params,
-			)
+			sess = requests.Session()
+			response = sess.send(req)
 			log.info('Response HTTP Status Code: {status_code}'.format(
 				status_code=response.status_code))
 			log.info('Response HTTP Response Body: {content}'.format(
 				content=response.content))
-		except requests.exceptions.RequestException:
+		except RequestException:
 			log.warning('HTTP Request failed')
 
 		j = json.loads(response.content)
