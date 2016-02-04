@@ -12,12 +12,19 @@ import time
 
 s = pycarwings2.Session("user@domain.com, "password")
 l = s.get_leaf()
+
 result_key = l.request_update()
-
-print("sleeping for 30 seconds")
-time.sleep(30)
-
+time.sleep(60) # sleep 60 seconds to give request time to process
 l.get_status_from_update(result_key)
+
+result_key = l.start_climate_control()
+time.sleep(60)
+l.get_start_climate_control_result(result_key)
+
+result_key = l.stop_climate_control()
+time.sleep(60)
+l.get_stop_climate_control_result(result_key)
+
 ```
 
 # license
