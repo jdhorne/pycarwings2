@@ -45,7 +45,7 @@ class Session(object):
 			response = sess.send(req)
 			log.info('Response HTTP Status Code: {status_code}'.format(
 				status_code=response.status_code))
-			log.info('Response HTTP Response Body: {content}'.format(
+			log.debug('Response HTTP Response Body: {content}'.format(
 				content=response.content))
 		except RequestException:
 			log.warning('HTTP Request failed')
@@ -60,7 +60,6 @@ class Session(object):
 
 
 	def connect(self):
-
 		response = self._request("UserLoginRequest.php", {
 			"RegionCode": self.region_code,
 			"UserId": self.username,
@@ -88,7 +87,12 @@ class Session(object):
 
 		self.leaf = Leaf(self, vin, nickname)
 
+		self.logged_in = True
+
 	def get_leaf(self, index=0):
+		if not self.logged_in:
+			self.connect()
+
 		return self.leaf
 
 
