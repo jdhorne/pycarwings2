@@ -16,6 +16,7 @@ import requests
 from requests import Request, Session, RequestException
 import json
 import logging
+from datetime import date
 
 BASE_URL = "https://gdcportalgw.its-mo.com/orchestration_1111/gdc/"
 
@@ -125,7 +126,71 @@ class Leaf:
 		return None
 
 	def start_climate_control(self):
-		pass
+		response = self.session._request("ACRemoteRequest.php", {
+			"RegionCode": self.session.region_code,
+			"lg": self.session.language,
+			"DCMID": self.session.dcm_id,
+			"VIN": self.vin,
+			"tz": self.session.tz,
+		})
+		return response["resultKey"]
+
+	# response will have:
+	#	"hvacStatus": "ON" or "OFF"
+	#   "operationResult": "START_BATTERY" or ...?
+	#   "acContinueTime": e.g. "15"
+	def get_start_climate_control_result(self, result_key):
+		response = self.session._request("ACRemoteResult.php", {
+			"RegionCode": self.session.region_code,
+			"lg": self.session.language,
+			"DCMID": self.session.dcm_id,
+			"VIN": self.vin,
+			"tz": self.session.tz,
+			"UserId": self.session.gdc_user_id, # this userid is the 'gdc' userid
+			"resultKey": result_key,
+		})
+		if response["responseFlag"] == "1":
+			return response
+
+		return None
+
+	def stop_climate_control(self):
+		response = self.session._request("ACRemoteOffRequest.php", {
+			"RegionCode": self.session.region_code,
+			"lg": self.session.language,
+			"DCMID": self.session.dcm_id,
+			"VIN": self.vin,
+			"tz": self.session.tz,
+		})
+		return response["resultKey"]
+
+	# response will have:
+	#	"hvacStatus": "ON" or "OFF"
+	def get_stop_climate_control_result(self, result_key):
+		response = self.session._request("ACRemoteOffResult.php", {
+			"RegionCode": self.session.region_code,
+			"lg": self.session.language,
+			"DCMID": self.session.dcm_id,
+			"VIN": self.vin,
+			"tz": self.session.tz,
+			"UserId": self.session.gdc_user_id, # this userid is the 'gdc' userid
+			"resultKey": result_key,
+		})
+		if response["responseFlag"] == "1":
+			return response
+
+		return None
 
 	def start_charging(self):
-		pass
+		response = self.session._request("BatteryRemoteChargingRequest.php", {
+			"RegionCode": self.session.region_code,
+			"lg": self.session.language,
+			"DCMID": self.session.dcm_id,
+			"VIN": self.vin,
+			"tz": self.session.tz,
+			"ExecuteTime": date.today().isoformat()
+		})
+		if response["status"] == "success":
+			return True
+
+		return False
