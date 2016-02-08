@@ -58,7 +58,69 @@ class Session(object):
 
 		return j
 
+	"""
+	example JSON response to login:
 
+	{
+		"status":200,
+		"message":"success",
+		"sessionId":"12345678-1234-1234-1234-1234567890",
+		"VehicleInfoList": {
+			"VehicleInfo": [
+				{
+					"charger20066":"false",
+					"nickname":"LEAF",
+					"telematicsEnabled":"true",
+					"vin":"1ABCDEFG2HIJKLM3N"
+				}
+			],
+			"vehicleInfo": [
+				{
+					"charger20066":"false",
+					"nickname":"LEAF",
+					"telematicsEnabled":"true",
+					"vin":"1ABCDEFG2HIJKLM3N"
+				}
+			]
+		},
+		"vehicle": {
+			"profile": {
+				"vin":"1ABCDEFG2HIJKLM3N",
+				"gdcUserId":"FG12345678",
+				"gdcPassword":"password",
+				"encAuthToken":"ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ",
+				"dcmId":"123456789012",
+				"nickname":"Alpha124",
+				"status":"ACCEPTED",
+				"statusDate": "Aug 15, 2015 07:00 PM"
+			}
+		},
+		"EncAuthToken":"ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ",
+		"CustomerInfo": {
+			"UserId":"AB12345678",
+			"Language":"en-US",
+			"Timezone":"America\/New_York",
+			"RegionCode":"NNA",
+			"OwnerId":"1234567890",
+			"Nickname":"Bravo456",
+			"Country":"US",
+			"VehicleImage":"\/content\/language\/default\/images\/img\/ph_car.jpg",
+			"UserVehicleBoundDurationSec":"999971200",
+			"VehicleInfo": {
+				"VIN":"1ABCDEFG2HIJKLM3N",
+				"DCMID":"201212345678",
+				"SIMID":"12345678901234567890",
+				"NAVIID":"1234567890",
+				"EncryptedNAVIID":"1234567890ABCDEFGHIJKLMNOP",
+				"MSN":"123456789012345",
+				"LastVehicleLoginTime":"",
+				"UserVehicleBoundTime":"2015-08-17T14:16:32Z",
+				"LastDCMUseTime":""
+			}
+		},
+		"UserInfoRevisionNo":"1"
+	}
+	"""
 	def connect(self):
 		response = self._request("UserLoginRequest.php", {
 			"RegionCode": self.region_code,
@@ -103,6 +165,16 @@ class Leaf:
 		self.nickname = nickname
 		log.debug("created leaf %s/%s" % (vin, nickname))
 
+	"""
+	example JSON response:
+	{
+		"status": 200,
+		"message": "success",
+		"userId": "user@domain.com",
+		"vin": "1ABCDEFG2HIJKLM3N",
+		"resultKey": "12345678901234567890123456789012345678901234567890"
+	}
+	"""
 	def request_update(self):
 		response = self.session._request("BatteryStatusCheckRequest.php", {
 			"RegionCode": self.session.region_code,
@@ -114,6 +186,46 @@ class Leaf:
 		})
 		return response["resultKey"]
 
+	"""
+	example responses:
+
+	not yet:
+	{
+		"status":200,
+		"message":"success",
+		"responseFlag":"0"
+	}
+
+	success:
+	{
+		"status": 200,
+		"message": "success",
+		"responseFlag": "1",
+		"operationResult": "START",
+		"timeStamp": "2016-01-02 17:17:38",
+		"cruisingRangeAcOn": "115328.0",
+		"cruisingRangeAcOff": "117024.0",
+		"currentChargeLevel": "0",
+		"chargeMode": "220V",
+		"pluginState": "CONNECTED",
+		"charging": "YES",
+		"chargeStatus": "CT",
+		"batteryDegradation": "10",
+		"batteryCapacity": "12",
+		"timeRequiredToFull": {
+			"hours": "",
+			"minutes": ""
+		},
+		"timeRequiredToFull200": {
+			"hours": "",
+			"minutes": ""
+		},
+		"timeRequiredToFull200_6kW": {
+			"hours": "",
+			"minutes": ""
+		}
+	}
+	"""
 	def get_status_from_update(self, result_key):
 		response = self.session._request("BatteryStatusCheckResultRequest.php", {
 			"RegionCode": self.session.region_code,
@@ -128,7 +240,15 @@ class Leaf:
 			return response
 
 		return None
-
+	"""
+	{
+		"status":200,
+		"message":"success",
+		"userId":"user@domain.com",
+		"vin":"1ABCDEFG2HIJKLM3N",
+		"resultKey":"12345678901234567890123456789012345678901234567890"
+	}
+	"""
 	def start_climate_control(self):
 		response = self.session._request("ACRemoteRequest.php", {
 			"RegionCode": self.session.region_code,
@@ -139,6 +259,26 @@ class Leaf:
 		})
 		return response["resultKey"]
 
+	"""
+	not yet:
+	{
+		"status":200,
+		"message":"success",
+		"responseFlag":"0"
+	}
+	success:
+	{
+		"status":200,
+		"message":"success",
+		"responseFlag":"1",
+		"operationResult":"START_BATTERY",
+		"acContinueTime":"15",
+		"cruisingRangeAcOn":"106400.0",
+		"cruisingRangeAcOff":"107920.0",
+		"timeStamp":"2016-02-05 12:59:46",
+		"hvacStatus":"ON"
+	}
+	"""
 	# response will have:
 	#	"hvacStatus": "ON" or "OFF"
 	#   "operationResult": "START_BATTERY" or ...?
@@ -163,7 +303,16 @@ class Leaf:
 			return response
 
 		return None
-
+	"""
+	sample JSON response:
+	{
+		"status":200,
+		"message":"success",
+		"userId":"user@domain.com",
+		"vin":"1ABCDEFG2HIJKLM3N",
+		"resultKey":"12345678901234567890123456789012345678901234567890"
+	}
+	"""
 	def stop_climate_control(self):
 		response = self.session._request("ACRemoteOffRequest.php", {
 			"RegionCode": self.session.region_code,
@@ -174,6 +323,16 @@ class Leaf:
 		})
 		return response["resultKey"]
 
+	"""
+	not yet:
+	{
+		"status":200,
+		"message":"success",
+		"responseFlag":"0"
+	}
+
+	success:
+	"""
 	# response will have:
 	#	"hvacStatus": "ON" or "OFF"
 	def get_stop_climate_control_result(self, result_key):
@@ -191,6 +350,12 @@ class Leaf:
 
 		return None
 
+	"""
+	{
+		"status":200,
+		"message":"success"
+	}
+	"""
 	def start_charging(self):
 		response = self.session._request("BatteryRemoteChargingRequest.php", {
 			"RegionCode": self.session.region_code,
