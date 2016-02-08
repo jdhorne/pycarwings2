@@ -37,13 +37,13 @@ class Session(object):
 	def _request(self, endpoint, params):
 		req = Request('GET', url=BASE_URL + endpoint, params=params).prepare()
 
-		log.info("invoking carwings API: %s" % req.url)
+		log.debug("invoking carwings API: %s" % req.url)
 		log.debug("params: %s" % json.dumps(params, sort_keys=True, indent=3, separators=(',', ': ')))
 
 		try:
 			sess = requests.Session()
 			response = sess.send(req)
-			log.info('Response HTTP Status Code: {status_code}'.format(
+			log.debug('Response HTTP Status Code: {status_code}'.format(
 				status_code=response.status_code))
 			log.debug('Response HTTP Response Body: {content}'.format(
 				content=response.content))
@@ -154,6 +154,12 @@ class Leaf:
 			"resultKey": result_key,
 		})
 		if response["responseFlag"] == "1":
+
+			# seems to indicate that the vehicle cannot be reached
+			if response["operationResult"] == "ELECTRIC_WAVE_ABNORMAL":
+				log.warning("could not establish communications with vehicle")
+				raise CarwingsError("could not establish communications with vehicle")
+
 			return response
 
 		return None
