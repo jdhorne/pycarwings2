@@ -182,3 +182,18 @@ class CarwingsStartClimateControlResponse(CarwingsResponse):
 		self.ac_continue_time = timedelta(minutes=float(status["acContinueTime"]))
 		self.hvac_status = status["hvacStatus"]  # "ON" or "OFF"
 		self.is_hvac_running = ("ON" == self.hvac_status)
+"""
+	{
+		"status":200,
+		"message":"success",
+		"responseFlag":"1",
+		"operationResult":"START",
+		"timeStamp":"2016-02-09 03:32:51",
+		"hvacStatus":"OFF"
+	}
+"""
+class CarwingsStopClimateControlResponse(CarwingsResponse):
+	def __init__(self, status):
+		self._set_timestamp(status)
+		self.hvac_status = status["hvacStatus"]  # "ON" or "OFF"
+		self.is_hvac_running = ("ON" == self.hvac_status)
