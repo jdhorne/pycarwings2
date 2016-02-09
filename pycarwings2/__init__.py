@@ -1,1 +1,1 @@
-__all__ = ['pycarwings2']
+__all__ = ['pycarwings2', 'responses']

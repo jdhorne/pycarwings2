@@ -17,6 +17,7 @@ from requests import Request, Session, RequestException
 import json
 import logging
 from datetime import date
+from responses import *
 
 BASE_URL = "https://gdcportalgw.its-mo.com/orchestration_1111/gdc/"
 
@@ -196,35 +197,7 @@ class Leaf:
 		"responseFlag":"0"
 	}
 
-	success:
-	{
-		"status": 200,
-		"message": "success",
-		"responseFlag": "1",
-		"operationResult": "START",
-		"timeStamp": "2016-01-02 17:17:38",
-		"cruisingRangeAcOn": "115328.0",
-		"cruisingRangeAcOff": "117024.0",
-		"currentChargeLevel": "0",
-		"chargeMode": "220V",
-		"pluginState": "CONNECTED",
-		"charging": "YES",
-		"chargeStatus": "CT",
-		"batteryDegradation": "10",
-		"batteryCapacity": "12",
-		"timeRequiredToFull": {
-			"hours": "",
-			"minutes": ""
-		},
-		"timeRequiredToFull200": {
-			"hours": "",
-			"minutes": ""
-		},
-		"timeRequiredToFull200_6kW": {
-			"hours": "",
-			"minutes": ""
-		}
-	}
+	success: see responses.py
 	"""
 	def get_status_from_update(self, result_key):
 		response = self.session._request("BatteryStatusCheckResultRequest.php", {
@@ -237,7 +210,7 @@ class Leaf:
 		})
 		# responseFlag will be "1" if a response has been returned; "0" otherwise
 		if response["responseFlag"] == "1":
-			return response
+			return CarwingsBatteryStatusResponse(response)
 
 		return None
 	"""
