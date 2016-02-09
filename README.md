@@ -4,6 +4,14 @@ Uses the REST/JSON API rather than the previous XML-based API.
 
 Inspired by original pycarwings library: https://github.com/haykinson/pycarwings
 
+# asynchronous methods
+
+Note that several of the most interesting methods in the CARWINGS service are
+asynchronous--you ask the service to do something, and it just says "ok". You then
+have to poll a corresponding method to find out if the operation was successful.
+
+More details are located at the top of [pycarwings2.py](https://github.com/jdhorne/pycarwings2/blob/master/pycarwings2/pycarwings2.py).
+
 # example usage
 
 ```python
@@ -15,15 +23,15 @@ l = s.get_leaf()
 
 result_key = l.request_update()
 time.sleep(60) # sleep 60 seconds to give request time to process
-l.get_status_from_update(result_key)
+battery_status = l.get_status_from_update(result_key)
 
 result_key = l.start_climate_control()
 time.sleep(60)
-l.get_start_climate_control_result(result_key)
+start_cc_result = l.get_start_climate_control_result(result_key)
 
 result_key = l.stop_climate_control()
 time.sleep(60)
-l.get_stop_climate_control_result(result_key)
+stop_cc_result = l.get_stop_climate_control_result(result_key)
 
 ```
 
