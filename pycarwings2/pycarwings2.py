@@ -221,6 +221,42 @@ class Leaf:
 
 		return None
 
+	# execute time example: "2016-02-09 17:24"
+	# I believe this time is specified in GMT, despite the "tz" parameter
+	def schedule_climate_control(self, execute_time):
+		response = self.session._request("ACRemoteNewRequest.php", {
+			"RegionCode": self.session.region_code,
+			"lg": self.session.language,
+			"DCMID": self.session.dcm_id,
+			"VIN": self.vin,
+			"tz": self.session.tz,
+			"ExecuteTime": execute_time,
+		})
+		return (response["message"] == "success")
+
+	# execute time example: "2016-02-09 17:24"
+	# I believe this time is specified in GMT, despite the "tz" parameter
+	def update_scheduled_climate_control(self, execute_time):
+		response = self.session._request("ACRemoteUpdateRequest.php", {
+			"RegionCode": self.session.region_code,
+			"lg": self.session.language,
+			"DCMID": self.session.dcm_id,
+			"VIN": self.vin,
+			"tz": self.session.tz,
+			"ExecuteTime": execute_time,
+		})
+		return (response["message"] == "success")
+
+	def cancel_scheduled_climate_control(self):
+		response = self.session._request("ACRemoteCancelRequest.php", {
+			"RegionCode": self.session.region_code,
+			"lg": self.session.language,
+			"DCMID": self.session.dcm_id,
+			"VIN": self.vin,
+			"tz": self.session.tz,
+		})
+		return (response["message"] == "success")
+
 	"""
 	{
 		"status":200,
