@@ -223,6 +223,7 @@ class Leaf:
 
 	# execute time example: "2016-02-09 17:24"
 	# I believe this time is specified in GMT, despite the "tz" parameter
+	# TODO: change parameter to python datetime object(?)
 	def schedule_climate_control(self, execute_time):
 		response = self.session._request("ACRemoteNewRequest.php", {
 			"RegionCode": self.session.region_code,
@@ -236,6 +237,7 @@ class Leaf:
 
 	# execute time example: "2016-02-09 17:24"
 	# I believe this time is specified in GMT, despite the "tz" parameter
+	# TODO: change parameter to python datetime object(?)
 	def update_scheduled_climate_control(self, execute_time):
 		response = self.session._request("ACRemoteUpdateRequest.php", {
 			"RegionCode": self.session.region_code,
@@ -256,6 +258,20 @@ class Leaf:
 			"tz": self.session.tz,
 		})
 		return (response["message"] == "success")
+
+	def get_climate_control_schedule(self):
+		response = self.session._request("GetScheduledACRemoteRequest.php", {
+			"RegionCode": self.session.region_code,
+			"lg": self.session.language,
+			"DCMID": self.session.dcm_id,
+			"VIN": self.vin,
+			"tz": self.session.tz,
+		})
+		if (response["message"] == "success"):
+			if response["ExecuteTime"] != "":
+				return CarwingsClimateControlScheduleResponse(response)
+
+		return None
 
 	"""
 	{

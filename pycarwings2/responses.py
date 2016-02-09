@@ -197,3 +197,21 @@ class CarwingsStopClimateControlResponse(CarwingsResponse):
 		self._set_timestamp(status)
 		self.hvac_status = status["hvacStatus"]  # "ON" or "OFF"
 		self.is_hvac_running = ("ON" == self.hvac_status)
+"""
+	{
+		"status":200,
+		"message":"success",
+		"LastScheduledTime":"Feb  9, 2016 05:39 PM",
+		"ExecuteTime":"2016-02-10 01:00:00",
+		"DisplayExecuteTime":"Feb  9, 2016 08:00 PM",
+		"TargetDate":"2016\/02\/10 01:00"
+	}
+"""
+class CarwingsClimateControlScheduleResponse(CarwingsResponse):
+	def __init__(self, status):
+		self.display_execute_time = status["DisplayExecuteTime"] # displayable, timezone-adjusted
+		self.execute_time = datetime.strptime(status["ExecuteTime"]+" UTC", "%Y-%m-%d %H:%M:%S %Z") # GMT
+		self.display_last_scheduled_time = status["LastScheduledTime"] # displayable, timezone-adjusted
+		self.last_scheduled_time = datetime.strptime(status["LastScheduledTime"], "%b %d, %Y %I:%M %p")
+		# unknown purpose; don't surface to avoid confusion
+		# self.target_date = status["TargetDate"]
