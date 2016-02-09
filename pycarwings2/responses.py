@@ -155,8 +155,8 @@ class CarwingsBatteryStatusResponse(CarwingsResponse):
 		self.is_charging = ("YES" == status["charging"])
 
 		self.time_to_full_trickle = timedelta(minutes=_time_remaining(status["timeRequiredToFull"]))
-		self.time_to_full_trickle_l2 = timedelta(minutes=_time_remaining(status["timeRequiredToFull200"]))
-		self.time_to_full_trickle_l2_6kw = timedelta(minutes=_time_remaining(status["timeRequiredToFull200_6kW"]))
+		self.time_to_full_l2 = timedelta(minutes=_time_remaining(status["timeRequiredToFull200"]))
+		self.time_to_full_l2_6kw = timedelta(minutes=_time_remaining(status["timeRequiredToFull200_6kW"]))
 
 		self.battery_percent = 100 * float(status["batteryDegradation"]) / float(status["batteryCapacity"])
 
