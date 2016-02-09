@@ -59,69 +59,6 @@ class Session(object):
 
 		return j
 
-	"""
-	example JSON response to login:
-
-	{
-		"status":200,
-		"message":"success",
-		"sessionId":"12345678-1234-1234-1234-1234567890",
-		"VehicleInfoList": {
-			"VehicleInfo": [
-				{
-					"charger20066":"false",
-					"nickname":"LEAF",
-					"telematicsEnabled":"true",
-					"vin":"1ABCDEFG2HIJKLM3N"
-				}
-			],
-			"vehicleInfo": [
-				{
-					"charger20066":"false",
-					"nickname":"LEAF",
-					"telematicsEnabled":"true",
-					"vin":"1ABCDEFG2HIJKLM3N"
-				}
-			]
-		},
-		"vehicle": {
-			"profile": {
-				"vin":"1ABCDEFG2HIJKLM3N",
-				"gdcUserId":"FG12345678",
-				"gdcPassword":"password",
-				"encAuthToken":"ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ",
-				"dcmId":"123456789012",
-				"nickname":"Alpha124",
-				"status":"ACCEPTED",
-				"statusDate": "Aug 15, 2015 07:00 PM"
-			}
-		},
-		"EncAuthToken":"ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ",
-		"CustomerInfo": {
-			"UserId":"AB12345678",
-			"Language":"en-US",
-			"Timezone":"America\/New_York",
-			"RegionCode":"NNA",
-			"OwnerId":"1234567890",
-			"Nickname":"Bravo456",
-			"Country":"US",
-			"VehicleImage":"\/content\/language\/default\/images\/img\/ph_car.jpg",
-			"UserVehicleBoundDurationSec":"999971200",
-			"VehicleInfo": {
-				"VIN":"1ABCDEFG2HIJKLM3N",
-				"DCMID":"201212345678",
-				"SIMID":"12345678901234567890",
-				"NAVIID":"1234567890",
-				"EncryptedNAVIID":"1234567890ABCDEFGHIJKLMNOP",
-				"MSN":"123456789012345",
-				"LastVehicleLoginTime":"",
-				"UserVehicleBoundTime":"2015-08-17T14:16:32Z",
-				"LastDCMUseTime":""
-			}
-		},
-		"UserInfoRevisionNo":"1"
-	}
-	"""
 	def connect(self):
 		response = self._request("UserLoginRequest.php", {
 			"RegionCode": self.region_code,
@@ -129,28 +66,24 @@ class Session(object):
 			"Password": self.password,
 		})
 
-		profile = response["vehicle"]["profile"]
-		self.gdc_user_id = profile["gdcUserId"]
+		ret = CarwingsLoginResponse(response)
+
+		self.gdc_user_id = ret.gdc_user_id
 		log.debug("gdc_user_id: %s" % self.gdc_user_id)
-
-		self.dcm_id = profile["dcmId"]
+		self.dcm_id = ret.dcm_id
 		log.debug("dcm_id: %s" % self.dcm_id)
-
-
-		customer_info = response["CustomerInfo"]
-		self.tz = customer_info["Timezone"]
+		self.tz = ret.tz
 		log.debug("tz: %s" % self.tz)
-		self.language = customer_info["Language"]
+		self.language = ret.language
 		log.debug("language: %s" % self.language)
+		log.debug("vin: %s" % ret.vin)
+		log.debug("nickname: %s" % ret.nickname)
 
-		vin = profile["vin"]
-		log.debug("vin: %s" % vin)
-
-		nickname = response["VehicleInfoList"]["vehicleInfo"][0]["nickname"]
-
-		self.leaf = Leaf(self, vin, nickname)
+		self.leaf = Leaf(self, ret.leafs[0]["vin"], ret.leafs[0]["nickname"])
 
 		self.logged_in = True
+		
+		return ret
 
 	def get_leaf(self, index=0):
 		if not self.logged_in:
@@ -239,23 +172,8 @@ class Leaf:
 		"message":"success",
 		"responseFlag":"0"
 	}
-	success:
-	{
-		"status":200,
-		"message":"success",
-		"responseFlag":"1",
-		"operationResult":"START_BATTERY",
-		"acContinueTime":"15",
-		"cruisingRangeAcOn":"106400.0",
-		"cruisingRangeAcOff":"107920.0",
-		"timeStamp":"2016-02-05 12:59:46",
-		"hvacStatus":"ON"
-	}
+	success: see responses.py
 	"""
-	# response will have:
-	#	"hvacStatus": "ON" or "OFF"
-	#   "operationResult": "START_BATTERY" or ...?
-	#   "acContinueTime": e.g. "15"
 	def get_start_climate_control_result(self, result_key):
 		response = self.session._request("ACRemoteResult.php", {
 			"RegionCode": self.session.region_code,
@@ -273,7 +191,7 @@ class Leaf:
 				log.warning("could not establish communications with vehicle")
 				raise CarwingsError("could not establish communications with vehicle")
 
-			return response
+			return CarwingsStartClimateControlResponse(response)
 
 		return None
 	"""
