@@ -119,7 +119,8 @@ class Session(object):
 		log.debug("vin: %s" % ret.vin)
 		log.debug("nickname: %s" % ret.nickname)
 
-		self.leaf = Leaf(self, ret.leafs[0]["vin"], ret.leafs[0]["nickname"])
+		self.leaf = Leaf(self, ret.leafs[0])
+		self.leaf.user_vehicle_bound_time = ret[]
 
 		self.logged_in = True
 
@@ -133,10 +134,11 @@ class Session(object):
 
 
 class Leaf:
-	def __init__(self, session, vin, nickname):
+	def __init__(self, session, params):
 		self.session = session
-		self.vin = vin
-		self.nickname = nickname
+		self.vin = params["vin"]
+		self.nickname = params["nickname"]
+		self.bound_time = params["bound_time"]
 		log.debug("created leaf %s/%s" % (vin, nickname))
 
 	def request_update(self):
@@ -292,3 +294,45 @@ class Leaf:
 			return True
 
 		return False
+
+	def get_driving_analysis(self):
+		response = self.session._request("DriveAnalysisBasicScreenRequestEx.php", {
+			"RegionCode": self.session.region_code,
+			"lg": self.session.language,
+			"DCMID": self.session.dcm_id,
+			"VIN": self.vin,
+			"tz": self.session.tz,
+		})
+		if response["message"] == "success":
+			return CarwingsDrivingAnalysisResponse(response)
+
+		return None
+
+	def get_latest_battery_status(self):
+		response = self.session._request("DriveAnalysisBasicScreenRequestEx.php", {
+			"RegionCode": self.session.region_code,
+			"lg": self.session.language,
+			"DCMID": self.session.dcm_id,
+			"VIN": self.vin,
+			"tz": self.session.tz,
+			"TimeFrom": self.bound_time
+		})
+		if response["message"] == "success":
+			return CarwingsLatestBatteryStatusResponse(response)
+
+		return None
+
+	# target_month format: "YYYYMM" e.g. "201602"
+	def get_electric_rate_simulation(self, target_month):
+		response = self.session._request("PriceSimulatorDetailInfoRequest.php", {
+			"RegionCode": self.session.region_code,
+			"lg": self.session.language,
+			"DCMID": self.session.dcm_id,
+			"VIN": self.vin,
+			"tz": self.session.tz,
+			"TargetMonth": target_month
+		})
+		if response["message"] == "success":
+			return CarwingsElectricRateSimulationResponse(response)
+
+		return None
