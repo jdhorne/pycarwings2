@@ -120,7 +120,6 @@ class Session(object):
 		log.debug("nickname: %s" % ret.nickname)
 
 		self.leaf = Leaf(self, ret.leafs[0])
-		self.leaf.user_vehicle_bound_time = ret[]
 
 		self.logged_in = True
 
@@ -139,7 +138,7 @@ class Leaf:
 		self.vin = params["vin"]
 		self.nickname = params["nickname"]
 		self.bound_time = params["bound_time"]
-		log.debug("created leaf %s/%s" % (vin, nickname))
+		log.debug("created leaf %s/%s" % (self.vin, self.nickname))
 
 	def request_update(self):
 		response = self.session._request("BatteryStatusCheckRequest.php", {
@@ -309,7 +308,7 @@ class Leaf:
 		return None
 
 	def get_latest_battery_status(self):
-		response = self.session._request("DriveAnalysisBasicScreenRequestEx.php", {
+		response = self.session._request("BatteryStatusRecordsRequest.php", {
 			"RegionCode": self.session.region_code,
 			"lg": self.session.language,
 			"DCMID": self.session.dcm_id,
