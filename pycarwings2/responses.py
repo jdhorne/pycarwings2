@@ -367,9 +367,20 @@ class CarwingsLatestBatteryStatusResponse(CarwingsResponse):
 
 		self._set_cruising_ranges(recs, off_key="CruisingRangeAcOff", on_key="CruisingRangeAcOn")
 
-		self.time_to_full_trickle = timedelta(minutes=_time_remaining(recs["TimeRequiredToFull"]))
-		self.time_to_full_l2 = timedelta(minutes=_time_remaining(recs["TimeRequiredToFull200"]))
-		self.time_to_full_l2_6kw = timedelta(minutes=_time_remaining(recs["TimeRequiredToFull200_6kW"]))
+		if "TimeRequiredToFull" in recs:
+			self.time_to_full_trickle = timedelta(minutes=_time_remaining(recs["TimeRequiredToFull"]))
+		else:
+			self.time_to_full_trickle = None
+
+		if "TimeRequiredToFull200" in recs:
+			self.time_to_full_l2 = timedelta(minutes=_time_remaining(recs["TimeRequiredToFull200"]))
+		else:
+			self.time_to_full_l2 = None
+
+		if "TimeRequiredToFull200_6kW" in recs:
+			self.time_to_full_l2_6kw = timedelta(minutes=_time_remaining(recs["TimeRequiredToFull200_6kW"]))
+		else:
+			self.time_to_full_l2_6kw = None
 
 		self.battery_percent = 100 * float(self.battery_remaining_amount) / float(self.battery_capacity)
 
