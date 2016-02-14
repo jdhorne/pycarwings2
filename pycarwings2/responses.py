@@ -1,5 +1,20 @@
+# Copyright 2016 Jason Horne
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import logging
 from datetime import date, timedelta, datetime
+import pycarwings2
 
 log = logging.getLogger("pycarwings2")
 
@@ -19,6 +34,18 @@ def _time_remaining(t):
 
 
 class CarwingsResponse:
+	def __init__(self, response):
+		op_result = None
+		if ("operationResult" in response):
+			op_result = response["operationResult"]
+		elif ("OperationResult" in response):
+			op_result = response["OperationResult"]
+
+		# seems to indicate that the vehicle cannot be reached
+		if ( "ELECTRIC_WAVE_ABNORMAL" == op_result):
+			log.error("could not establish communications with vehicle")
+			raise pycarwings2.CarwingsError("could not establish communications with vehicle")
+
 	def _set_cruising_ranges(self, status, off_key="cruisingRangeAcOff", on_key="cruisingRangeAcOn"):
 		self.cruising_range_ac_off_km = float(status[off_key]) / 1000
 		self.cruising_range_ac_on_km = float(status[on_key]) / 1000
@@ -91,6 +118,8 @@ class CarwingsResponse:
 	"""
 class CarwingsLoginResponse(CarwingsResponse):
 	def __init__(self, response):
+		CarwingsResponse.__init__(self, response)
+
 		profile = response["vehicle"]["profile"]
 		self.gdc_user_id = profile["gdcUserId"]
 		self.dcm_id = profile["dcmId"]
@@ -143,6 +172,8 @@ class CarwingsLoginResponse(CarwingsResponse):
 """
 class CarwingsBatteryStatusResponse(CarwingsResponse):
 	def __init__(self, status):
+		CarwingsResponse.__init__(self, status)
+
 		self._set_timestamp(status)
 		self._set_cruising_ranges(status)
 
@@ -220,6 +251,8 @@ class CarwingsClimateControlStatusResponse(CarwingsResponse):
 """
 class CarwingsStartClimateControlResponse(CarwingsResponse):
 	def __init__(self, status):
+		CarwingsResponse.__init__(self, status)
+
 		self._set_timestamp(status)
 		self._set_cruising_ranges(status)
 
@@ -239,6 +272,8 @@ class CarwingsStartClimateControlResponse(CarwingsResponse):
 """
 class CarwingsStopClimateControlResponse(CarwingsResponse):
 	def __init__(self, status):
+		CarwingsResponse.__init__(self, status)
+
 		self._set_timestamp(status)
 		self.hvac_status = status["hvacStatus"]  # "ON" or "OFF"
 		self.is_hvac_running = ("ON" == self.hvac_status)
@@ -254,6 +289,8 @@ class CarwingsStopClimateControlResponse(CarwingsResponse):
 """
 class CarwingsClimateControlScheduleResponse(CarwingsResponse):
 	def __init__(self, status):
+		CarwingsResponse.__init__(self, status)
+
 		self.display_execute_time = status["DisplayExecuteTime"] # displayable, timezone-adjusted
 		self.execute_time = datetime.strptime(status["ExecuteTime"]+" UTC", "%Y-%m-%d %H:%M:%S %Z") # GMT
 		self.display_last_scheduled_time = status["LastScheduledTime"] # displayable, timezone-adjusted
@@ -289,6 +326,8 @@ class CarwingsClimateControlScheduleResponse(CarwingsResponse):
 """
 class CarwingsDrivingAnalysisResponse(CarwingsResponse):
 	def __init__(self, status):
+		CarwingsResponse.__init__(self, status)
+
 		summary = status["DriveAnalysisBasicScreenResponsePersonalData"]["DateSummary"]
 
 		# avg energy economy, in units of 'electric_cost_scale' (e.g. miles/kWh)
@@ -354,6 +393,8 @@ class CarwingsDrivingAnalysisResponse(CarwingsResponse):
 """
 class CarwingsLatestBatteryStatusResponse(CarwingsResponse):
 	def __init__(self, status):
+		CarwingsResponse.__init__(self, status["BatteryStatusRecords"])
+
 		recs = status["BatteryStatusRecords"]
 
 		bs = recs["BatteryStatus"]
@@ -386,6 +427,8 @@ class CarwingsLatestBatteryStatusResponse(CarwingsResponse):
 
 class CarwingsElectricRateSimulationResponse(CarwingsResponse):
 	def __init__(self, status):
+		CarwingsResponse.__init__(self, status)
+
 		r = status["PriceSimulatorDetailInfoResponsePersonalData"]
 		t = r["PriceSimulatorTotalInfo"]
 
