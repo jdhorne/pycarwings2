@@ -169,6 +169,35 @@ class CarwingsLoginResponse(CarwingsResponse):
 			"minutes": ""
 		}
 	}
+
+	{
+		"status":200,
+		"message":"success",
+		"responseFlag":"1",
+		"operationResult":"START",
+		"timeStamp":"2016-02-14 20:28:45",
+		"cruisingRangeAcOn":"107136.0",
+		"cruisingRangeAcOff":"115776.0",
+		"currentChargeLevel":"0",
+		"chargeMode":"NOT_CHARGING",
+		"pluginState":"QC_CONNECTED",
+		"charging":"YES",
+		"chargeStatus":"CT",
+		"batteryDegradation":"11",
+		"batteryCapacity":"12",
+		"timeRequiredToFull":{
+			"hours":"",
+			"minutes":""
+		},
+		"timeRequiredToFull200":{
+			"hours":"",
+			"minutes":""
+		},
+		"timeRequiredToFull200_6kW":{
+			"hours":"",
+			"minutes":""
+		}
+	}	
 """
 class CarwingsBatteryStatusResponse(CarwingsResponse):
 	def __init__(self, status):
@@ -390,6 +419,28 @@ class CarwingsDrivingAnalysisResponse(CarwingsResponse):
 			"TargetDate":"2016\/02\/10 04:09"
 		}
 	}
+
+	{
+		"status":200,
+		"message":"success",
+		"BatteryStatusRecords":{
+			"OperationResult":"START",
+			"OperationDateAndTime":"Feb 14, 2016 03:28 PM",
+			"BatteryStatus":{
+				"BatteryChargingStatus":"RAPIDLY_CHARGING",
+				"BatteryCapacity":"12",
+				"BatteryRemainingAmount":"11",
+				"BatteryRemainingAmountWH":"",
+				"BatteryRemainingAmountkWH":""
+			},
+			"PluginState":"QC_CONNECTED",
+			"CruisingRangeAcOn":"107136.0",
+			"CruisingRangeAcOff":"115776.0",
+			"NotificationDateAndTime":"2016\/02\/14 20:28",
+			"TargetDate":"2016\/02\/14 20:28"
+		}
+	}
+
 """
 class CarwingsLatestBatteryStatusResponse(CarwingsResponse):
 	def __init__(self, status):
