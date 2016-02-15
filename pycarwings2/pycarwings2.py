@@ -187,12 +187,6 @@ class Leaf:
 			"resultKey": result_key,
 		})
 		if response["responseFlag"] == "1":
-
-			# seems to indicate that the vehicle cannot be reached
-			if response["operationResult"] == "ELECTRIC_WAVE_ABNORMAL":
-				log.warning("could not establish communications with vehicle")
-				raise CarwingsError("could not establish communications with vehicle")
-
 			return CarwingsStartClimateControlResponse(response)
 
 		return None
