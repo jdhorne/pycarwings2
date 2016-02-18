@@ -13,6 +13,17 @@
 # limitations under the License.
 
 """
+When logging in, you must specify a geographic 'region' parameter. The only
+known values for this are as follows:
+
+	NNA  : USA
+	NE   : Europe
+	NCI  : Canada
+
+Information about Nissan on the web (e.g. http://nissannews.com/en-US/nissan/usa/pages/executive-bios)
+suggests others (this page suggests NMEX for Mexico, NLAC for Latin America) but
+these have not been confirmed.
+
 There are three asynchronous operations in this API, paired with three follow-up
 "status check" methods.
 

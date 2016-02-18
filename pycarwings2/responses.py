@@ -197,7 +197,7 @@ class CarwingsLoginResponse(CarwingsResponse):
 			"hours":"",
 			"minutes":""
 		}
-	}	
+	}
 """
 class CarwingsBatteryStatusResponse(CarwingsResponse):
 	def __init__(self, status):
@@ -215,6 +215,10 @@ class CarwingsBatteryStatusResponse(CarwingsResponse):
 		self.charging_status = status["chargeMode"]
 
 		self.is_charging = ("YES" == status["charging"])
+
+		self.is_quick_charging = ("RAPIDLY_CHARGING" == status["chargeMode"])
+		self.is_connected_to_quick_charger = ("QC_CONNECTED" == status["pluginState"])
+
 
 		self.time_to_full_trickle = timedelta(minutes=_time_remaining(status["timeRequiredToFull"]))
 		self.time_to_full_l2 = timedelta(minutes=_time_remaining(status["timeRequiredToFull200"]))
@@ -453,9 +457,11 @@ class CarwingsLatestBatteryStatusResponse(CarwingsResponse):
 		self.battery_remaining_amount = bs["BatteryRemainingAmount"]
 		self.charging_status = bs["BatteryChargingStatus"]
 		self.is_charging = ("NOT_CHARGING" != bs["BatteryChargingStatus"]) # double negatives are fun
+		self.is_quick_charging = ("RAPIDLY_CHARGING" == bs["BatteryChargingStatus"])
 
 		self.plugin_state = recs["PluginState"]
 		self.is_connected = ("NOT_CONNECTED" != recs["PluginState"]) # another double negative, for the kids
+		self.is_connected_to_quick_charger = ("QC_CONNECTED" == recs["PluginState"])
 
 		self._set_cruising_ranges(recs, off_key="CruisingRangeAcOff", on_key="CruisingRangeAcOn")
 
