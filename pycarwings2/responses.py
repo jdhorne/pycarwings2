@@ -396,6 +396,7 @@ class CarwingsDrivingAnalysisResponse(CarwingsResponse):
 		self.advice = [ status["AdviceList"]["Advice"] ] # will contain "title" and "body"
 
 """
+	# not connected to a charger
 	{
 		"status":200,
 		"message":"success",
@@ -429,6 +430,7 @@ class CarwingsDrivingAnalysisResponse(CarwingsResponse):
 		}
 	}
 
+	# connected to a quick charger
 	{
 		"status":200,
 		"message":"success",
@@ -448,6 +450,32 @@ class CarwingsDrivingAnalysisResponse(CarwingsResponse):
 			"NotificationDateAndTime":"2016\/02\/14 20:28",
 			"TargetDate":"2016\/02\/14 20:28"
 		}
+	}
+
+	# connected to a charging station
+	{
+	  "status": 200,
+	  "message": "success",
+	  "BatteryStatusRecords": {
+	    "OperationResult": "START",
+	    "OperationDateAndTime": "Feb 19, 2016 12:12 PM",
+	    "BatteryStatus": {
+	      "BatteryChargingStatus": "NORMAL_CHARGING",
+	      "BatteryCapacity": "12",
+	      "BatteryRemainingAmount": "12",
+	      "BatteryRemainingAmountWH": "",
+	      "BatteryRemainingAmountkWH": ""
+	    },
+	    "PluginState": "CONNECTED",
+	    "CruisingRangeAcOn": "132000.0",
+	    "CruisingRangeAcOff": "134000.0",
+	    "TimeRequiredToFull200_6kW": {
+	      "HourRequiredToFull": "0",
+	      "MinutesRequiredToFull": "40"
+	    },
+	    "NotificationDateAndTime": "2016/02/19 17:12",
+	    "TargetDate": "2016/02/19 17:12"
+	  }
 	}
 
 """
