@@ -125,7 +125,12 @@ class CarwingsLoginResponse(CarwingsResponse):
 		self.dcm_id = profile["dcmId"]
 		self.vin = profile["vin"]
 
-		self.nickname = response["VehicleInfoList"]["vehicleInfo"][0]["nickname"]
+		# first nickname was not present for one user in Europe; fallback to
+		#   another 'nickname' field.
+		if "VehicleInfoList" in response:
+			self.nickname = response["VehicleInfoList"]["vehicleInfo"][0]["nickname"]
+		else:
+			self.nickname = response["vehicle"]["profile"]["nickname"]
 
 		customer_info = response["CustomerInfo"]
 		self.tz = customer_info["Timezone"]
