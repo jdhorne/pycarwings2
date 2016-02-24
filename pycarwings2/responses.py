@@ -271,8 +271,19 @@ climate control off:
 		"OperationDateAndTime":""
 	}
 """
-class CarwingsClimateControlStatusResponse(CarwingsResponse):
-	pass
+class CarwingsLatestClimateControlStatusResponse(CarwingsResponse):
+	def __init__(self, status):
+		CarwingsResponse.__init__(self, status["RemoteACRecords"])
+		racr = status["RemoteACRecords"]
+
+		self._set_cruising_ranges(racr, on_key="CruisingRangeAcOn", off_key="CruisingRangeAcOff")
+
+		# seems to be running only if both of these contain "START"
+		self.is_hvac_running = (
+			racr["OperationResult"] and
+			racr["OperationResult"].startswith("START") and
+			racr["RemoteACOperation"] == "START"
+		)
 
 """
 	{

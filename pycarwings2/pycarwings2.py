@@ -21,7 +21,7 @@ known values for this are as follows:
 	NCI  : Canada
 	NMA  : Australia
 	NML  : Japan
-	
+
 Information about Nissan on the web (e.g. http://nissannews.com/en-US/nissan/usa/pages/executive-bios)
 suggests others (this page suggests NMEX for Mexico, NLAC for Latin America) but
 these have not been confirmed.
@@ -325,6 +325,20 @@ class Leaf:
 		})
 		if response["message"] == "success":
 			return CarwingsLatestBatteryStatusResponse(response)
+
+		return None
+
+	def get_latest_hvac_status(self):
+		response = self.session._request("RemoteACRecordsRequest.php", {
+			"RegionCode": self.session.region_code,
+			"lg": self.session.language,
+			"DCMID": self.session.dcm_id,
+			"VIN": self.vin,
+			"tz": self.session.tz,
+			"TimeFrom": self.bound_time
+		})
+		if response["message"] == "success":
+			return CarwingsLatestClimateControlStatusResponse(response)
 
 		return None
 
