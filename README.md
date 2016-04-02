@@ -1,6 +1,6 @@
 # pycarwings2
 Library for connecting and interacting with Nissan's CARWINGS service for Nissan LEAF cars.
-Uses the REST/JSON API rather than the previous XML-based API.
+Uses the (newly secure!) REST/JSON API rather than the previous XML-based API.
 
 Inspired by original pycarwings library: https://github.com/haykinson/pycarwings
 

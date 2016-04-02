@@ -40,7 +40,6 @@ Here's an example response from an asynchronous operation, showing the result ke
 
 	{
 		"status":200,
-		"message":"success",
 		"userId":"user@domain.com",
 		"vin":"1ABCDEFG2HIJKLM3N",
 		"resultKey":"12345678901234567890123456789012345678901234567890"
@@ -55,7 +54,6 @@ Example 'no response yet' result from a status check invocation:
 
 	{
 		"status":200,
-		"message":"success",
 		"responseFlag":"0"
 	}
 
@@ -71,10 +69,20 @@ import json
 import logging
 from datetime import date
 from responses import *
+import base64
+from Crypto.Cipher import Blowfish
+import binascii
 
-BASE_URL = "https://gdcportalgw.its-mo.com/orchestration_1111/gdc/"
+BASE_URL = "https://gdcportalgw.its-mo.com/gworchest_0307C/gdc/"
 
 log = logging.getLogger("pycarwings2")
+
+# from http://stackoverflow.com/questions/17134100/python-blowfish-encryption
+def _PKCS5Padding(string):
+	byteNum = len(string)
+	packingLength = 8 - byteNum % 8
+	appendage = chr(packingLength) * packingLength
+	return string + appendage
 
 class CarwingsError(Exception):
 	pass
@@ -87,9 +95,16 @@ class Session(object):
 		self.password = password
 		self.region_code = region
 		self.logged_in = False
+		self.custom_sessionid = None
 
 	def _request(self, endpoint, params):
-		req = Request('GET', url=BASE_URL + endpoint, params=params).prepare()
+		params["initial_app_strings"] = "geORNtsZe5I4lRGjG9GZiA"
+		if self.custom_sessionid:
+			params["custom_sessionid"] = self.custom_sessionid
+		else:
+			params["custom_sessionid"] = ""
+
+		req = Request('POST', url=BASE_URL + endpoint, data=params).prepare()
 
 		log.debug("invoking carwings API: %s" % req.url)
 		log.debug("params: %s" % json.dumps(params, sort_keys=True, indent=3, separators=(',', ': ')))
@@ -113,13 +128,26 @@ class Session(object):
 		return j
 
 	def connect(self):
+		response = self._request("InitialApp.php", {
+			"RegionCode": self.region_code,
+			"lg": "en-US",
+		})
+		ret = CarwingsInitialAppResponse(response)
+
+		c1  = Blowfish.new(ret.baseprm, Blowfish.MODE_ECB)
+		packedPassword = _PKCS5Padding(self.password)
+		encryptedPassword = c1.encrypt(packedPassword)
+		encodedPassword = base64.standard_b64encode(encryptedPassword)
+
 		response = self._request("UserLoginRequest.php", {
 			"RegionCode": self.region_code,
 			"UserId": self.username,
-			"Password": self.password,
+			"Password": encodedPassword,
 		})
 
 		ret = CarwingsLoginResponse(response)
+
+		self.custom_sessionid = ret.custom_sessionid
 
 		self.gdc_user_id = ret.gdc_user_id
 		log.debug("gdc_user_id: %s" % self.gdc_user_id)
@@ -241,7 +269,7 @@ class Leaf:
 			"tz": self.session.tz,
 			"ExecuteTime": execute_time,
 		})
-		return (response["message"] == "success")
+		return (response["status"] == 200)
 
 	# execute time example: "2016-02-09 17:24"
 	# I believe this time is specified in GMT, despite the "tz" parameter
@@ -255,7 +283,7 @@ class Leaf:
 			"tz": self.session.tz,
 			"ExecuteTime": execute_time,
 		})
-		return (response["message"] == "success")
+		return (response["status"] == 200)
 
 	def cancel_scheduled_climate_control(self):
 		response = self.session._request("ACRemoteCancelRequest.php", {
@@ -265,7 +293,7 @@ class Leaf:
 			"VIN": self.vin,
 			"tz": self.session.tz,
 		})
-		return (response["message"] == "success")
+		return (response["status"] == 200)
 
 	def get_climate_control_schedule(self):
 		response = self.session._request("GetScheduledACRemoteRequest.php", {
@@ -275,7 +303,7 @@ class Leaf:
 			"VIN": self.vin,
 			"tz": self.session.tz,
 		})
-		if (response["message"] == "success"):
+		if (response["status"] == 200):
 			if response["ExecuteTime"] != "":
 				return CarwingsClimateControlScheduleResponse(response)
 
@@ -284,7 +312,6 @@ class Leaf:
 	"""
 	{
 		"status":200,
-		"message":"success"
 	}
 	"""
 	def start_charging(self):
@@ -296,7 +323,7 @@ class Leaf:
 			"tz": self.session.tz,
 			"ExecuteTime": date.today().isoformat()
 		})
-		if response["status"] == "success":
+		if response["status"] == 200:
 			return True
 
 		return False
@@ -309,7 +336,7 @@ class Leaf:
 			"VIN": self.vin,
 			"tz": self.session.tz,
 		})
-		if response["message"] == "success":
+		if response["status"] == 200:
 			return CarwingsDrivingAnalysisResponse(response)
 
 		return None
@@ -323,7 +350,7 @@ class Leaf:
 			"tz": self.session.tz,
 			"TimeFrom": self.bound_time
 		})
-		if response["message"] == "success":
+		if response["status"] == 200:
 			return CarwingsLatestBatteryStatusResponse(response)
 
 		return None
@@ -337,7 +364,7 @@ class Leaf:
 			"tz": self.session.tz,
 			"TimeFrom": self.bound_time
 		})
-		if response["message"] == "success":
+		if response["status"] == 200:
 			return CarwingsLatestClimateControlStatusResponse(response)
 
 		return None
@@ -352,7 +379,7 @@ class Leaf:
 			"tz": self.session.tz,
 			"TargetMonth": target_month
 		})
-		if response["message"] == "success":
+		if response["status"] == 200:
 			return CarwingsElectricRateSimulationResponse(response)
 
 		return None
