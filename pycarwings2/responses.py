@@ -53,7 +53,13 @@ class CarwingsResponse:
 	def _set_timestamp(self, status):
 		self.timestamp = datetime.strptime(status["timeStamp"], "%Y-%m-%d %H:%M:%S") # "2016-01-02 17:17:38"
 
-	"""
+
+class CarwingsInitialAppResponse(CarwingsResponse):
+	def __init__(self, response):
+		CarwingsResponse.__init__(self, response)
+		self.baseprm = response["baseprm"]
+
+"""
 	example JSON response to login:
 
 	{
@@ -115,11 +121,7 @@ class CarwingsResponse:
 		},
 		"UserInfoRevisionNo":"1"
 	}
-	"""
-class CarwingsInitialAppResponse(CarwingsResponse):
-	def __init__(self, response):
-		CarwingsResponse.__init__(self, response)
-		self.baseprm = response["baseprm"]
+"""
 
 class CarwingsLoginResponse(CarwingsResponse):
 	def __init__(self, response):
@@ -130,14 +132,14 @@ class CarwingsLoginResponse(CarwingsResponse):
 		self.dcm_id = profile["dcmId"]
 		self.vin = profile["vin"]
 
-		# first nickname was not present for one user in Europe; fallback to
-		#   another 'nickname' field.
+		# vehicleInfo block may be top level, or contained in a VehicleInfoList object;
+		# why it's sometimes one way and sometimes another is not clear.
 		if "VehicleInfoList" in response:
 			self.nickname = response["VehicleInfoList"]["vehicleInfo"][0]["nickname"]
 			self.custom_sessionid = response["VehicleInfoList"]["vehicleInfo"][0]["custom_sessionid"]
-		else:
-			self.nickname = response["vehicle"]["profile"]["nickname"]
-			# sessionid?
+		elif "vehicleInfo" in response:
+			self.nickname = response["vehicleInfo"][0]["nickname"]
+			self.custom_sessionid = response["vehicleInfo"][0]["custom_sessionid"]
 
 		customer_info = response["CustomerInfo"]
 		self.tz = customer_info["Timezone"]

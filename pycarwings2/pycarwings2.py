@@ -97,6 +97,18 @@ class Session(object):
 		self.logged_in = False
 		self.custom_sessionid = None
 
+	def _request_with_retry(self, endpoint, params):
+		ret = self._request(endpoint, params)
+
+		if ("status" in ret) and (ret["status"] == 404):
+			log.error("carwings error; logging in and trying request again: %s" % ret)
+			# try logging in again
+			self.connect()
+			ret = self._request(endpoint, params)
+
+		return ret
+
+
 	def _request(self, endpoint, params):
 		params["initial_app_strings"] = "geORNtsZe5I4lRGjG9GZiA"
 		if self.custom_sessionid:
@@ -128,6 +140,9 @@ class Session(object):
 		return j
 
 	def connect(self):
+		self.custom_sessionid = None
+		self.logged_in = False
+
 		response = self._request("InitialApp.php", {
 			"RegionCode": self.region_code,
 			"lg": "en-US",
@@ -182,7 +197,7 @@ class Leaf:
 		log.debug("created leaf %s/%s" % (self.vin, self.nickname))
 
 	def request_update(self):
-		response = self.session._request("BatteryStatusCheckRequest.php", {
+		response = self.session._request_with_retry("BatteryStatusCheckRequest.php", {
 			"RegionCode": self.session.region_code,
 			"lg": self.session.language,
 			"DCMID": self.session.dcm_id,
@@ -193,7 +208,7 @@ class Leaf:
 		return response["resultKey"]
 
 	def get_status_from_update(self, result_key):
-		response = self.session._request("BatteryStatusCheckResultRequest.php", {
+		response = self.session._request_with_retry("BatteryStatusCheckResultRequest.php", {
 			"RegionCode": self.session.region_code,
 			"lg": self.session.language,
 			"DCMID": self.session.dcm_id,
@@ -208,7 +223,7 @@ class Leaf:
 		return None
 
 	def start_climate_control(self):
-		response = self.session._request("ACRemoteRequest.php", {
+		response = self.session._request_with_retry("ACRemoteRequest.php", {
 			"RegionCode": self.session.region_code,
 			"lg": self.session.language,
 			"DCMID": self.session.dcm_id,
@@ -218,7 +233,7 @@ class Leaf:
 		return response["resultKey"]
 
 	def get_start_climate_control_result(self, result_key):
-		response = self.session._request("ACRemoteResult.php", {
+		response = self.session._request_with_retry("ACRemoteResult.php", {
 			"RegionCode": self.session.region_code,
 			"lg": self.session.language,
 			"DCMID": self.session.dcm_id,
@@ -233,7 +248,7 @@ class Leaf:
 		return None
 
 	def stop_climate_control(self):
-		response = self.session._request("ACRemoteOffRequest.php", {
+		response = self.session._request_with_retry("ACRemoteOffRequest.php", {
 			"RegionCode": self.session.region_code,
 			"lg": self.session.language,
 			"DCMID": self.session.dcm_id,
@@ -243,7 +258,7 @@ class Leaf:
 		return response["resultKey"]
 
 	def get_stop_climate_control_result(self, result_key):
-		response = self.session._request("ACRemoteOffResult.php", {
+		response = self.session._request_with_retry("ACRemoteOffResult.php", {
 			"RegionCode": self.session.region_code,
 			"lg": self.session.language,
 			"DCMID": self.session.dcm_id,
@@ -261,7 +276,7 @@ class Leaf:
 	# I believe this time is specified in GMT, despite the "tz" parameter
 	# TODO: change parameter to python datetime object(?)
 	def schedule_climate_control(self, execute_time):
-		response = self.session._request("ACRemoteNewRequest.php", {
+		response = self.session._request_with_retry("ACRemoteNewRequest.php", {
 			"RegionCode": self.session.region_code,
 			"lg": self.session.language,
 			"DCMID": self.session.dcm_id,
@@ -275,7 +290,7 @@ class Leaf:
 	# I believe this time is specified in GMT, despite the "tz" parameter
 	# TODO: change parameter to python datetime object(?)
 	def update_scheduled_climate_control(self, execute_time):
-		response = self.session._request("ACRemoteUpdateRequest.php", {
+		response = self.session._request_with_retry("ACRemoteUpdateRequest.php", {
 			"RegionCode": self.session.region_code,
 			"lg": self.session.language,
 			"DCMID": self.session.dcm_id,
@@ -286,7 +301,7 @@ class Leaf:
 		return (response["status"] == 200)
 
 	def cancel_scheduled_climate_control(self):
-		response = self.session._request("ACRemoteCancelRequest.php", {
+		response = self.session._request_with_retry("ACRemoteCancelRequest.php", {
 			"RegionCode": self.session.region_code,
 			"lg": self.session.language,
 			"DCMID": self.session.dcm_id,
@@ -296,7 +311,7 @@ class Leaf:
 		return (response["status"] == 200)
 
 	def get_climate_control_schedule(self):
-		response = self.session._request("GetScheduledACRemoteRequest.php", {
+		response = self.session._request_with_retry("GetScheduledACRemoteRequest.php", {
 			"RegionCode": self.session.region_code,
 			"lg": self.session.language,
 			"DCMID": self.session.dcm_id,
@@ -315,7 +330,7 @@ class Leaf:
 	}
 	"""
 	def start_charging(self):
-		response = self.session._request("BatteryRemoteChargingRequest.php", {
+		response = self.session._request_with_retry("BatteryRemoteChargingRequest.php", {
 			"RegionCode": self.session.region_code,
 			"lg": self.session.language,
 			"DCMID": self.session.dcm_id,
@@ -329,7 +344,7 @@ class Leaf:
 		return False
 
 	def get_driving_analysis(self):
-		response = self.session._request("DriveAnalysisBasicScreenRequestEx.php", {
+		response = self.session._request_with_retry("DriveAnalysisBasicScreenRequestEx.php", {
 			"RegionCode": self.session.region_code,
 			"lg": self.session.language,
 			"DCMID": self.session.dcm_id,
@@ -342,7 +357,7 @@ class Leaf:
 		return None
 
 	def get_latest_battery_status(self):
-		response = self.session._request("BatteryStatusRecordsRequest.php", {
+		response = self.session._request_with_retry("BatteryStatusRecordsRequest.php", {
 			"RegionCode": self.session.region_code,
 			"lg": self.session.language,
 			"DCMID": self.session.dcm_id,
@@ -356,7 +371,7 @@ class Leaf:
 		return None
 
 	def get_latest_hvac_status(self):
-		response = self.session._request("RemoteACRecordsRequest.php", {
+		response = self.session._request_with_retry("RemoteACRecordsRequest.php", {
 			"RegionCode": self.session.region_code,
 			"lg": self.session.language,
 			"DCMID": self.session.dcm_id,
@@ -371,7 +386,7 @@ class Leaf:
 
 	# target_month format: "YYYYMM" e.g. "201602"
 	def get_electric_rate_simulation(self, target_month):
-		response = self.session._request("PriceSimulatorDetailInfoRequest.php", {
+		response = self.session._request_with_retry("PriceSimulatorDetailInfoRequest.php", {
 			"RegionCode": self.session.region_code,
 			"lg": self.session.language,
 			"DCMID": self.session.dcm_id,
