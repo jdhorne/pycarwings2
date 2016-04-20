@@ -25,6 +25,5 @@ setup(
     author_email='',
     description='Python library for interacting with the Nissan CARWINGS telematics service',
     packages=find_packages(),
- #   packages=['yaml iso8601 ,
-#    include_package_data=True
+    include_package_data=True
 )
