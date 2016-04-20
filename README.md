@@ -11,6 +11,8 @@ asynchronous--you ask the service to do something, and it just says "ok". You th
 have to poll a corresponding method to find out if the operation was successful.
 
 More details are located at the top of [pycarwings2.py](https://github.com/jdhorne/pycarwings2/blob/master/pycarwings2/pycarwings2.py).
+# Installation
+pip install git+https://github.com/jdhorne/pycarwings2.git
 
 # example usage
 
