@@ -16,26 +16,7 @@ pip install git+https://github.com/jdhorne/pycarwings2.git
 
 # example usage
 
-```python
-import pycarwings2
-import time
-
-s = pycarwings2.Session("user@domain.com, "password")
-l = s.get_leaf()
-
-result_key = l.request_update()
-time.sleep(60) # sleep 60 seconds to give request time to process
-battery_status = l.get_status_from_update(result_key)
-
-result_key = l.start_climate_control()
-time.sleep(60)
-start_cc_result = l.get_start_climate_control_result(result_key)
-
-result_key = l.stop_climate_control()
-time.sleep(60)
-stop_cc_result = l.get_stop_climate_control_result(result_key)
-
-```
+exemples/get-leaf-info.py
 
 # license
 Copyright 2016 Jason Horne
