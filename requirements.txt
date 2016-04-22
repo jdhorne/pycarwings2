@@ -1,0 +1,4 @@
+PyYAML
+iso8601
+requests
+pycrypto

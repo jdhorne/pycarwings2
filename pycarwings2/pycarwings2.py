@@ -75,7 +75,7 @@ import binascii
 
 BASE_URL = "https://gdcportalgw.its-mo.com/gworchest_0307C/gdc/"
 
-log = logging.getLogger("pycarwings2")
+log = logging.getLogger(__name__)
 
 # from http://stackoverflow.com/questions/17134100/python-blowfish-encryption
 def _PKCS5Padding(string):
@@ -133,6 +133,9 @@ class Session(object):
 
 		j = json.loads(response.content)
 
+		if "message" in j and j["message"] == "INVALID PARAMS":
+			log.error("carwings error %s: %s" % (j["message"], j["status"]) )
+			raise CarwingsError("INVALID PARAMS")
 		if "ErrorMessage" in j:
 			log.error("carwings error %s: %s" % (j["ErrorCode"], j["ErrorMessage"]) )
 			raise CarwingsError
