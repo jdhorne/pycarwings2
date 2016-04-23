@@ -1,11 +1,11 @@
 #!/usr/bin/python
 
-import pycarwings2.pycarwings2
+import pycarwings2
 import time
 from ConfigParser import SafeConfigParser
 import logging
 import sys
-
+import pprint
 
 logging.basicConfig(stream=sys.stdout, level=logging.ERROR)
 
@@ -19,10 +19,17 @@ password = parser.get('get-leaf-info', 'password')
 
 logging.debug("login = %s , password = %s" % ( username , password)  )
 
-s = pycarwings2.pycarwings2.Session(username, password , "NE")
+print "Prepare Session"
+s = pycarwings2.Session(username, password , "NE")
+print "Login..."
 l = s.get_leaf()
 
+print "get_latest_battery_status"
 leaf_info = l.get_latest_battery_status()
+print "date %s" % leaf_info.answer["BatteryStatusRecords"]["OperationDateAndTime"]
+print "date %s" % leaf_info.answer["BatteryStatusRecords"]["NotificationDateAndTime"]
+print "battery_capacity2 %s" % leaf_info.answer["BatteryStatusRecords"]["BatteryStatus"]["BatteryCapacity"]
+
 print "battery_capacity %s" % leaf_info.battery_capacity
 print "charging_status %s" % leaf_info.charging_status
 print "battery_capacity %s" % leaf_info.battery_capacity
@@ -38,10 +45,18 @@ print "time_to_full_l2 %s" % leaf_info.time_to_full_l2
 print "time_to_full_l2_6kw %s" % leaf_info.time_to_full_l2_6kw
 print "leaf_info.battery_percent %s" % leaf_info.battery_percent
 
-#time.sleep(60) # sleep 60 seconds to give request time to process
-#battery_status = l.get_status_from_update(result_key)
-#print "Battery Status"
-#print battery_status
+
+result_key = l.request_update()
+print "start sleep 10"
+time.sleep(10) # sleep 60 seconds to give request time to process
+print "end sleep 10"
+battery_status = l.get_status_from_update(result_key)
+while battery_status is None:
+	print "not update"
+        time.sleep(10)
+	battery_status = l.get_status_from_update(result_key)
+
+pprint.pprint(battery_status.answer)
 
 #result_key = l.start_climate_control()
 #time.sleep(60)
