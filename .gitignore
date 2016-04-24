@@ -62,3 +62,7 @@ target/
 .ipynb_checkpoints
 test.py
 captures
+
+#my own password file
+exemples/my_config.ini
+my_config.ini

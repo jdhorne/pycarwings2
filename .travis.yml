@@ -4,7 +4,7 @@ python:
 #before_install:
 #  - pip install pytest-flake8
 install:
-  - "pip install -r requirements.txt"
+  - "pip install ."
 script:
 #  - "py.test -v -flake8"
   - "py.test -v"
