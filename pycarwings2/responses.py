@@ -241,7 +241,8 @@ class CarwingsBatteryStatusResponse(CarwingsResponse):
 		self.time_to_full_l2 = timedelta(minutes=_time_remaining(status["timeRequiredToFull200"]))
 		self.time_to_full_l2_6kw = timedelta(minutes=_time_remaining(status["timeRequiredToFull200_6kW"]))
 
-		self.battery_percent = 100 * float(status["batteryDegradation"]) / float(status["batteryCapacity"])
+		# 2016-12: battery degradation is always 0-12 even if battery capacity is diminished.
+		self.battery_percent = 100 * float(status["batteryDegradation"]) / 12.0
 
 
 """
