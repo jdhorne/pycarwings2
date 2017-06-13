@@ -67,3 +67,4 @@ captures
 exemples/my_config.ini
 my_config.ini
 *.rsls
+.idea
