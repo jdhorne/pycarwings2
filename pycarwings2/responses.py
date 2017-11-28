@@ -541,6 +541,14 @@ class CarwingsLatestBatteryStatusResponse(CarwingsResponse):
 
 		self.battery_percent = 100 * float(self.battery_remaining_amount) / float(self.battery_capacity)
 
+		# Leaf 2016 has SOC (State Of Charge) in BatteryStatus, a more accurate battery_percentage
+		if "SOC" in bs:
+			self.state_of_charge = bs["SOC"]["Value"]
+			# optional?
+			#self.battery_percent = self.soc
+		else:
+			self.state_of_charge = None
+
 class CarwingsElectricRateSimulationResponse(CarwingsResponse):
 	def __init__(self, status):
 		CarwingsResponse.__init__(self, status)
