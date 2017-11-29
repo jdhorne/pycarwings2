@@ -404,3 +404,28 @@ class Leaf:
 			return CarwingsElectricRateSimulationResponse(response)
 
 		return None
+
+	def request_location(self):
+		response = self.session._request_with_retry("MyCarFinderRequest.php", {
+			"RegionCode": self.session.region_code,
+			"lg": self.session.language,
+			"DCMID": self.session.dcm_id,
+			"VIN": self.vin,
+			"tz": self.session.tz,
+			"UserId": self.session.gdc_user_id, # this userid is the 'gdc' userid
+		})
+		return response["resultKey"]
+
+	def get_status_from_location(self, result_key):
+		response = self.session._request_with_retry("MyCarFinderResultRequest.php", {
+			"RegionCode": self.session.region_code,
+			"lg": self.session.language,
+			"DCMID": self.session.dcm_id,
+			"VIN": self.vin,
+			"tz": self.session.tz,
+			"resultKey": result_key,
+		})
+		if response["responseFlag"] == "1":
+			return CarwingsMyCarFinderResponse(response)
+
+		return None
