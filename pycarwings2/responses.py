@@ -562,3 +562,37 @@ class CarwingsElectricRateSimulationResponse(CarwingsResponse):
 		self.electricity_rate = r["ElectricPrice"]
 		self.electric_bill = r["ElectricBill"]
 		self.electric_cost_scale = r["ElectricCostScale"] # e.g. "miles/kWh"
+
+class CarwingsMyCarFinderResponse(CarwingsResponse):
+	def __init__(self, status):
+		CarwingsResponse.__init__(self, status)
+
+		self.latitude = status["lat"]
+		self.longitude = status["lng"]
+"""
+{
+    "Location": {
+        "Country": "",
+        "Home": "OUTSIDE",
+        "LatitudeDeg": "69",
+        "LatitudeMin": "41",
+        "LatitudeMode": "NORTH",
+        "LatitudeSec": "5540",
+        "LocationType": "WGS84",
+        "LongitudeDeg": "18",
+        "LongitudeMin": "38",
+        "LongitudeMode": "EAST",
+        "LongitudeSec": "2506",
+        "Position": "UNAVAILABLE"
+    },
+    "TargetDate": "2017/11/29 20:02",
+    "lat": "69.698722222222",
+    "lng": "18.640294444444",
+    "receivedDate": "2017/11/29 20:02",
+    "responseFlag": "1",
+    "resultCode": "1",
+    "status": 200,
+    "timeStamp": "2017-11-29 20:02:45"
+}
+
+"""
