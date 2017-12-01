@@ -44,6 +44,7 @@ print "time_to_full_trickle %s" % leaf_info.time_to_full_trickle
 print "time_to_full_l2 %s" % leaf_info.time_to_full_l2
 print "time_to_full_l2_6kw %s" % leaf_info.time_to_full_l2_6kw
 print "leaf_info.battery_percent %s" % leaf_info.battery_percent
+print "leaf_info.state_of_charge %s" % leaf_info.state_of_charge
 
 
 result_key = l.request_update()
