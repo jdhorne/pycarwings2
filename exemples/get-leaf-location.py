@@ -37,5 +37,12 @@ while True:
 		print "Waiting for response (sleep 10)"
 		time.sleep(10)
 	else:
-		print("lat: {} long: {}".format(location_status.latitude, location_status.longitude))
+		lat = location_status.latitude
+		lon = location_status.longitude
+		print("lat: {} long: {}".format(lat, lon))
+		# OpenStreetMap url, ctrl click in terminal to open browser,
+		# for example, my parking lot ;)
+		# http://www.openstreetmap.org/search?query=52.37309+4.89217#map=19/52.37310/4.89220
+		z = 19 # zoom level, lower is bigger area
+		print("http://www.openstreetmap.org/search?query={}%20{}#map={}/{}/{}".format(lat,lon,z,lat,lon))
 		break
