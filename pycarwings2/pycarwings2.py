@@ -68,7 +68,7 @@ from requests import Request, Session, RequestException
 import json
 import logging
 from datetime import date
-from responses import *
+from .responses import *
 import base64
 from Crypto.Cipher import Blowfish
 import binascii
