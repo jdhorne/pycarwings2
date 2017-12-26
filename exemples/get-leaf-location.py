@@ -32,10 +32,10 @@ print "request_location"
 result_key = l.request_location()
 
 while True:
-	location_status = l.get_status_from_location(result_key)
-	if location_status is None:
-		print "Waiting for response (sleep 10)"
-		time.sleep(10)
-	else:
-		print("lat: {} long: {}".format(location_status.latitude, location_status.longitude))
-		break
+    location_status = l.get_status_from_location(result_key)
+    if location_status is None:
+        print "Waiting for response (sleep 10)"
+        time.sleep(10)
+    else:
+        print("lat: {} long: {}".format(location_status.latitude, location_status.longitude))
+        break

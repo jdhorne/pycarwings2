@@ -19,45 +19,45 @@ import pycarwings2
 log = logging.getLogger(__name__)
 
 def _time_remaining(t):
-	minutes = float(0)
-	if t:
-		if ("hours" in t) and t["hours"]:
-			minutes = 60*float(t["hours"])
-		elif ("HourRequiredToFull" in t) and t["HourRequiredToFull"]:
-			minutes = 60*float(t["HourRequiredToFull"])
-		if ("minutes" in t) and t["minutes"]:
-			minutes += float(t["minutes"])
-		elif ("MinutesRequiredToFull" in t) and t["MinutesRequiredToFull"]:
-			minutes += float(t["MinutesRequiredToFull"])
+    minutes = float(0)
+    if t:
+        if ("hours" in t) and t["hours"]:
+            minutes = 60*float(t["hours"])
+        elif ("HourRequiredToFull" in t) and t["HourRequiredToFull"]:
+            minutes = 60*float(t["HourRequiredToFull"])
+        if ("minutes" in t) and t["minutes"]:
+            minutes += float(t["minutes"])
+        elif ("MinutesRequiredToFull" in t) and t["MinutesRequiredToFull"]:
+            minutes += float(t["MinutesRequiredToFull"])
 
-	return minutes
+    return minutes
 
 
 class CarwingsResponse:
-	def __init__(self, response):
-		op_result = None
-		if ("operationResult" in response):
-			op_result = response["operationResult"]
-		elif ("OperationResult" in response):
-			op_result = response["OperationResult"]
+    def __init__(self, response):
+        op_result = None
+        if ("operationResult" in response):
+            op_result = response["operationResult"]
+        elif ("OperationResult" in response):
+            op_result = response["OperationResult"]
 
-		# seems to indicate that the vehicle cannot be reached
-		if ( "ELECTRIC_WAVE_ABNORMAL" == op_result):
-			log.error("could not establish communications with vehicle")
-			raise pycarwings2.CarwingsError("could not establish communications with vehicle")
+        # seems to indicate that the vehicle cannot be reached
+        if ( "ELECTRIC_WAVE_ABNORMAL" == op_result):
+            log.error("could not establish communications with vehicle")
+            raise pycarwings2.CarwingsError("could not establish communications with vehicle")
 
-	def _set_cruising_ranges(self, status, off_key="cruisingRangeAcOff", on_key="cruisingRangeAcOn"):
-		self.cruising_range_ac_off_km = float(status[off_key]) / 1000
-		self.cruising_range_ac_on_km = float(status[on_key]) / 1000
+    def _set_cruising_ranges(self, status, off_key="cruisingRangeAcOff", on_key="cruisingRangeAcOn"):
+        self.cruising_range_ac_off_km = float(status[off_key]) / 1000
+        self.cruising_range_ac_on_km = float(status[on_key]) / 1000
 
-	def _set_timestamp(self, status):
-		self.timestamp = datetime.strptime(status["timeStamp"], "%Y-%m-%d %H:%M:%S") # "2016-01-02 17:17:38"
+    def _set_timestamp(self, status):
+        self.timestamp = datetime.strptime(status["timeStamp"], "%Y-%m-%d %H:%M:%S") # "2016-01-02 17:17:38"
 
 
 class CarwingsInitialAppResponse(CarwingsResponse):
-	def __init__(self, response):
-		CarwingsResponse.__init__(self, response)
-		self.baseprm = response["baseprm"]
+    def __init__(self, response):
+        CarwingsResponse.__init__(self, response)
+        self.baseprm = response["baseprm"]
 
 """
 	example JSON response to login:
@@ -124,33 +124,33 @@ class CarwingsInitialAppResponse(CarwingsResponse):
 """
 
 class CarwingsLoginResponse(CarwingsResponse):
-	def __init__(self, response):
-		CarwingsResponse.__init__(self, response)
+    def __init__(self, response):
+        CarwingsResponse.__init__(self, response)
 
-		profile = response["vehicle"]["profile"]
-		self.gdc_user_id = profile["gdcUserId"]
-		self.dcm_id = profile["dcmId"]
-		self.vin = profile["vin"]
+        profile = response["vehicle"]["profile"]
+        self.gdc_user_id = profile["gdcUserId"]
+        self.dcm_id = profile["dcmId"]
+        self.vin = profile["vin"]
 
-		# vehicleInfo block may be top level, or contained in a VehicleInfoList object;
-		# why it's sometimes one way and sometimes another is not clear.
-		if "VehicleInfoList" in response:
-			self.nickname = response["VehicleInfoList"]["vehicleInfo"][0]["nickname"]
-			self.custom_sessionid = response["VehicleInfoList"]["vehicleInfo"][0]["custom_sessionid"]
-		elif "vehicleInfo" in response:
-			self.nickname = response["vehicleInfo"][0]["nickname"]
-			self.custom_sessionid = response["vehicleInfo"][0]["custom_sessionid"]
+        # vehicleInfo block may be top level, or contained in a VehicleInfoList object;
+        # why it's sometimes one way and sometimes another is not clear.
+        if "VehicleInfoList" in response:
+            self.nickname = response["VehicleInfoList"]["vehicleInfo"][0]["nickname"]
+            self.custom_sessionid = response["VehicleInfoList"]["vehicleInfo"][0]["custom_sessionid"]
+        elif "vehicleInfo" in response:
+            self.nickname = response["vehicleInfo"][0]["nickname"]
+            self.custom_sessionid = response["vehicleInfo"][0]["custom_sessionid"]
 
-		customer_info = response["CustomerInfo"]
-		self.tz = customer_info["Timezone"]
-		self.language = customer_info["Language"]
-		self.user_vehicle_bound_time = customer_info["VehicleInfo"]["UserVehicleBoundTime"]
+        customer_info = response["CustomerInfo"]
+        self.tz = customer_info["Timezone"]
+        self.language = customer_info["Language"]
+        self.user_vehicle_bound_time = customer_info["VehicleInfo"]["UserVehicleBoundTime"]
 
-		self.leafs = [ {
-			"vin": self.vin,
-			"nickname": self.nickname,
-			"bound_time": self.user_vehicle_bound_time
-		} ]
+        self.leafs = [ {
+            "vin": self.vin,
+            "nickname": self.nickname,
+            "bound_time": self.user_vehicle_bound_time
+        } ]
 
 
 
@@ -214,35 +214,35 @@ class CarwingsLoginResponse(CarwingsResponse):
 	}
 """
 class CarwingsBatteryStatusResponse(CarwingsResponse):
-	def __init__(self, status):
-		CarwingsResponse.__init__(self, status)
-		
-
-		self._set_timestamp(status)
-		self._set_cruising_ranges(status)
-                
-		self.answer = status
-
-		self.battery_capacity = status["batteryCapacity"]
-		self.battery_degradation = status["batteryDegradation"]
-
-		self.is_connected = ("NOT_CONNECTED" != status["pluginState"]) # fun double negative
-		self.plugin_state = status["pluginState"]
-
-		self.charging_status = status["chargeMode"]
-
-		self.is_charging = ("YES" == status["charging"])
-
-		self.is_quick_charging = ("RAPIDLY_CHARGING" == status["chargeMode"])
-		self.is_connected_to_quick_charger = ("QC_CONNECTED" == status["pluginState"])
+    def __init__(self, status):
+        CarwingsResponse.__init__(self, status)
 
 
-		self.time_to_full_trickle = timedelta(minutes=_time_remaining(status["timeRequiredToFull"]))
-		self.time_to_full_l2 = timedelta(minutes=_time_remaining(status["timeRequiredToFull200"]))
-		self.time_to_full_l2_6kw = timedelta(minutes=_time_remaining(status["timeRequiredToFull200_6kW"]))
+        self._set_timestamp(status)
+        self._set_cruising_ranges(status)
 
-		# 2016-12: battery degradation is always 0-12 even if battery capacity is diminished.
-		self.battery_percent = 100 * float(status["batteryDegradation"]) / 12.0
+        self.answer = status
+
+        self.battery_capacity = status["batteryCapacity"]
+        self.battery_degradation = status["batteryDegradation"]
+
+        self.is_connected = ("NOT_CONNECTED" != status["pluginState"]) # fun double negative
+        self.plugin_state = status["pluginState"]
+
+        self.charging_status = status["chargeMode"]
+
+        self.is_charging = ("YES" == status["charging"])
+
+        self.is_quick_charging = ("RAPIDLY_CHARGING" == status["chargeMode"])
+        self.is_connected_to_quick_charger = ("QC_CONNECTED" == status["pluginState"])
+
+
+        self.time_to_full_trickle = timedelta(minutes=_time_remaining(status["timeRequiredToFull"]))
+        self.time_to_full_l2 = timedelta(minutes=_time_remaining(status["timeRequiredToFull200"]))
+        self.time_to_full_l2_6kw = timedelta(minutes=_time_remaining(status["timeRequiredToFull200_6kW"]))
+
+        # 2016-12: battery degradation is always 0-12 even if battery capacity is diminished.
+        self.battery_percent = 100 * float(status["batteryDegradation"]) / 12.0
 
 
 """
@@ -285,18 +285,18 @@ climate control off:
 	}
 """
 class CarwingsLatestClimateControlStatusResponse(CarwingsResponse):
-	def __init__(self, status):
-		CarwingsResponse.__init__(self, status["RemoteACRecords"])
-		racr = status["RemoteACRecords"]
+    def __init__(self, status):
+        CarwingsResponse.__init__(self, status["RemoteACRecords"])
+        racr = status["RemoteACRecords"]
 
-		self._set_cruising_ranges(racr, on_key="CruisingRangeAcOn", off_key="CruisingRangeAcOff")
+        self._set_cruising_ranges(racr, on_key="CruisingRangeAcOn", off_key="CruisingRangeAcOff")
 
-		# seems to be running only if both of these contain "START"
-		self.is_hvac_running = (
-			racr["OperationResult"] and
-			racr["OperationResult"].startswith("START") and
-			racr["RemoteACOperation"] == "START"
-		)
+        # seems to be running only if both of these contain "START"
+        self.is_hvac_running = (
+            racr["OperationResult"] and
+            racr["OperationResult"].startswith("START") and
+            racr["RemoteACOperation"] == "START"
+        )
 
 """
 	{
@@ -312,16 +312,16 @@ class CarwingsLatestClimateControlStatusResponse(CarwingsResponse):
 	}
 """
 class CarwingsStartClimateControlResponse(CarwingsResponse):
-	def __init__(self, status):
-		CarwingsResponse.__init__(self, status)
+    def __init__(self, status):
+        CarwingsResponse.__init__(self, status)
 
-		self._set_timestamp(status)
-		self._set_cruising_ranges(status)
+        self._set_timestamp(status)
+        self._set_cruising_ranges(status)
 
-		self.operation_result = status["operationResult"] # e.g. "START_BATTERY", ...?
-		self.ac_continue_time = timedelta(minutes=float(status["acContinueTime"]))
-		self.hvac_status = status["hvacStatus"]  # "ON" or "OFF"
-		self.is_hvac_running = ("ON" == self.hvac_status)
+        self.operation_result = status["operationResult"] # e.g. "START_BATTERY", ...?
+        self.ac_continue_time = timedelta(minutes=float(status["acContinueTime"]))
+        self.hvac_status = status["hvacStatus"]  # "ON" or "OFF"
+        self.is_hvac_running = ("ON" == self.hvac_status)
 """
 	{
 		"status":200,
@@ -333,12 +333,12 @@ class CarwingsStartClimateControlResponse(CarwingsResponse):
 	}
 """
 class CarwingsStopClimateControlResponse(CarwingsResponse):
-	def __init__(self, status):
-		CarwingsResponse.__init__(self, status)
+    def __init__(self, status):
+        CarwingsResponse.__init__(self, status)
 
-		self._set_timestamp(status)
-		self.hvac_status = status["hvacStatus"]  # "ON" or "OFF"
-		self.is_hvac_running = ("ON" == self.hvac_status)
+        self._set_timestamp(status)
+        self.hvac_status = status["hvacStatus"]  # "ON" or "OFF"
+        self.is_hvac_running = ("ON" == self.hvac_status)
 """
 	{
 		"status":200,
@@ -350,15 +350,15 @@ class CarwingsStopClimateControlResponse(CarwingsResponse):
 	}
 """
 class CarwingsClimateControlScheduleResponse(CarwingsResponse):
-	def __init__(self, status):
-		CarwingsResponse.__init__(self, status)
+    def __init__(self, status):
+        CarwingsResponse.__init__(self, status)
 
-		self.display_execute_time = status["DisplayExecuteTime"] # displayable, timezone-adjusted
-		self.execute_time = datetime.strptime(status["ExecuteTime"]+" UTC", "%Y-%m-%d %H:%M:%S %Z") # GMT
-		self.display_last_scheduled_time = status["LastScheduledTime"] # displayable, timezone-adjusted
-		self.last_scheduled_time = datetime.strptime(status["LastScheduledTime"], "%b %d, %Y %I:%M %p")
-		# unknown purpose; don't surface to avoid confusion
-		# self.target_date = status["TargetDate"]
+        self.display_execute_time = status["DisplayExecuteTime"] # displayable, timezone-adjusted
+        self.execute_time = datetime.strptime(status["ExecuteTime"]+" UTC", "%Y-%m-%d %H:%M:%S %Z") # GMT
+        self.display_last_scheduled_time = status["LastScheduledTime"] # displayable, timezone-adjusted
+        self.last_scheduled_time = datetime.strptime(status["LastScheduledTime"], "%b %d, %Y %I:%M %p")
+        # unknown purpose; don't surface to avoid confusion
+        # self.target_date = status["TargetDate"]
 """
 	{
 		"status":200,
@@ -387,37 +387,37 @@ class CarwingsClimateControlScheduleResponse(CarwingsResponse):
 	}
 """
 class CarwingsDrivingAnalysisResponse(CarwingsResponse):
-	def __init__(self, status):
-		CarwingsResponse.__init__(self, status)
+    def __init__(self, status):
+        CarwingsResponse.__init__(self, status)
 
-		summary = status["DriveAnalysisBasicScreenResponsePersonalData"]["DateSummary"]
+        summary = status["DriveAnalysisBasicScreenResponsePersonalData"]["DateSummary"]
 
-		# avg energy economy, in units of 'electric_cost_scale' (e.g. miles/kWh)
-		self.electric_mileage = summary["ElectricMileage"]
-		# rating for above, scale of 1-5
-		self.electric_mileage_level = summary["ElectricMileageLevel"]
+        # avg energy economy, in units of 'electric_cost_scale' (e.g. miles/kWh)
+        self.electric_mileage = summary["ElectricMileage"]
+        # rating for above, scale of 1-5
+        self.electric_mileage_level = summary["ElectricMileageLevel"]
 
-		# "acceleration performance": "electricity used for motor activation over 1km", Watt-Hours
-		self.power_consumption_moter = summary["PowerConsumptMoter"] # ???
-		# rating for above, scale of 1-5
-		self.power_consumption_moter_level = summary["PowerConsumptMoterLevel"] # ???
+        # "acceleration performance": "electricity used for motor activation over 1km", Watt-Hours
+        self.power_consumption_moter = summary["PowerConsumptMoter"] # ???
+        # rating for above, scale of 1-5
+        self.power_consumption_moter_level = summary["PowerConsumptMoterLevel"] # ???
 
-		# Watt-Hours generated by braking
-		self.power_consumption_minus = summary["PowerConsumptMinus"] # ???
-		# rating for above, scale of 1-5
-		self.power_consumption_minus_level = summary["PowerConsumptMinusLevel"] # ???
+        # Watt-Hours generated by braking
+        self.power_consumption_minus = summary["PowerConsumptMinus"] # ???
+        # rating for above, scale of 1-5
+        self.power_consumption_minus_level = summary["PowerConsumptMinusLevel"] # ???
 
-		# Electricity used by aux devices, Watt-Hours
-		self.power_consumption_aux = summary["PowerConsumptAUX"] # ???
-		# rating for above, scale of 1-5
-		self.power_consumption_aux_level = summary["PowerConsumptAUXLevel"] # ???
+        # Electricity used by aux devices, Watt-Hours
+        self.power_consumption_aux = summary["PowerConsumptAUX"] # ???
+        # rating for above, scale of 1-5
+        self.power_consumption_aux_level = summary["PowerConsumptAUXLevel"] # ???
 
-		self.display_date = summary["DisplayDate"] # "Feb  3, 16"
+        self.display_date = summary["DisplayDate"] # "Feb  3, 16"
 
 
-		self.electric_cost_scale = status["DriveAnalysisBasicScreenResponsePersonalData"]["ElectricCostScale"]
+        self.electric_cost_scale = status["DriveAnalysisBasicScreenResponsePersonalData"]["ElectricCostScale"]
 
-		self.advice = [ status["AdviceList"]["Advice"] ] # will contain "title" and "body"
+        self.advice = [ status["AdviceList"]["Advice"] ] # will contain "title" and "body"
 
 """
 	# not connected to a charger
@@ -504,79 +504,79 @@ class CarwingsDrivingAnalysisResponse(CarwingsResponse):
 
 """
 class CarwingsLatestBatteryStatusResponse(CarwingsResponse):
-	def __init__(self, status):
-		CarwingsResponse.__init__(self, status["BatteryStatusRecords"])
-		
-                self.answer = status
+    def __init__(self, status):
+        CarwingsResponse.__init__(self, status["BatteryStatusRecords"])
 
-		recs = status["BatteryStatusRecords"]
+        self.answer = status
 
-		bs = recs["BatteryStatus"]
-		self.battery_capacity = bs["BatteryCapacity"]
-		self.battery_remaining_amount = bs["BatteryRemainingAmount"]
-		self.charging_status = bs["BatteryChargingStatus"]
-		self.is_charging = ("NOT_CHARGING" != bs["BatteryChargingStatus"]) # double negatives are fun
-		self.is_quick_charging = ("RAPIDLY_CHARGING" == bs["BatteryChargingStatus"])
+        recs = status["BatteryStatusRecords"]
 
-		self.plugin_state = recs["PluginState"]
-		self.is_connected = ("NOT_CONNECTED" != recs["PluginState"]) # another double negative, for the kids
-		self.is_connected_to_quick_charger = ("QC_CONNECTED" == recs["PluginState"])
+        bs = recs["BatteryStatus"]
+        self.battery_capacity = bs["BatteryCapacity"]
+        self.battery_remaining_amount = bs["BatteryRemainingAmount"]
+        self.charging_status = bs["BatteryChargingStatus"]
+        self.is_charging = ("NOT_CHARGING" != bs["BatteryChargingStatus"]) # double negatives are fun
+        self.is_quick_charging = ("RAPIDLY_CHARGING" == bs["BatteryChargingStatus"])
 
-		self._set_cruising_ranges(recs, off_key="CruisingRangeAcOff", on_key="CruisingRangeAcOn")
+        self.plugin_state = recs["PluginState"]
+        self.is_connected = ("NOT_CONNECTED" != recs["PluginState"]) # another double negative, for the kids
+        self.is_connected_to_quick_charger = ("QC_CONNECTED" == recs["PluginState"])
 
-		if "TimeRequiredToFull" in recs:
-			self.time_to_full_trickle = timedelta(minutes=_time_remaining(recs["TimeRequiredToFull"]))
-		else:
-			self.time_to_full_trickle = None
+        self._set_cruising_ranges(recs, off_key="CruisingRangeAcOff", on_key="CruisingRangeAcOn")
 
-		if "TimeRequiredToFull200" in recs:
-			self.time_to_full_l2 = timedelta(minutes=_time_remaining(recs["TimeRequiredToFull200"]))
-		else:
-			self.time_to_full_l2 = None
+        if "TimeRequiredToFull" in recs:
+            self.time_to_full_trickle = timedelta(minutes=_time_remaining(recs["TimeRequiredToFull"]))
+        else:
+            self.time_to_full_trickle = None
 
-		if "TimeRequiredToFull200_6kW" in recs:
-			self.time_to_full_l2_6kw = timedelta(minutes=_time_remaining(recs["TimeRequiredToFull200_6kW"]))
-		else:
-			self.time_to_full_l2_6kw = None
+        if "TimeRequiredToFull200" in recs:
+            self.time_to_full_l2 = timedelta(minutes=_time_remaining(recs["TimeRequiredToFull200"]))
+        else:
+            self.time_to_full_l2 = None
 
-		self.battery_percent = 100 * float(self.battery_remaining_amount) / float(self.battery_capacity)
+        if "TimeRequiredToFull200_6kW" in recs:
+            self.time_to_full_l2_6kw = timedelta(minutes=_time_remaining(recs["TimeRequiredToFull200_6kW"]))
+        else:
+            self.time_to_full_l2_6kw = None
 
-		# Leaf 2016 has SOC (State Of Charge) in BatteryStatus, a more accurate battery_percentage
-		if "SOC" in bs:
-			self.state_of_charge = bs["SOC"]["Value"]
-			# optional?
-			#self.battery_percent = self.soc
-		else:
-			self.state_of_charge = None
+        self.battery_percent = 100 * float(self.battery_remaining_amount) / float(self.battery_capacity)
+
+        # Leaf 2016 has SOC (State Of Charge) in BatteryStatus, a more accurate battery_percentage
+        if "SOC" in bs:
+            self.state_of_charge = bs["SOC"]["Value"]
+            # optional?
+            #self.battery_percent = self.soc
+        else:
+            self.state_of_charge = None
 
 class CarwingsElectricRateSimulationResponse(CarwingsResponse):
-	def __init__(self, status):
-		CarwingsResponse.__init__(self, status)
+    def __init__(self, status):
+        CarwingsResponse.__init__(self, status)
 
-		r = status["PriceSimulatorDetailInfoResponsePersonalData"]
-		t = r["PriceSimulatorTotalInfo"]
+        r = status["PriceSimulatorDetailInfoResponsePersonalData"]
+        t = r["PriceSimulatorTotalInfo"]
 
-		self.month = r["DisplayMonth"] # e.g. "Feb/2016"
+        self.month = r["DisplayMonth"] # e.g. "Feb/2016"
 
-		self.total_number_of_trips = t["TotalNumberOfTrips"]
-		self.total_power_consumption = t["TotalPowerConsumptTotal"] # in kWh
-		self.total_acceleration_power_consumption = t["TotalPowerConsumptMoter"] # in kWh
-		self.total_power_regenerated_in_braking = t["TotalPowerConsumptMinus"] # in kWh
-		self.total_travel_distance_km = float(t["TotalTravelDistance"]) / 1000 # assumed to be in meters?
+        self.total_number_of_trips = t["TotalNumberOfTrips"]
+        self.total_power_consumption = t["TotalPowerConsumptTotal"] # in kWh
+        self.total_acceleration_power_consumption = t["TotalPowerConsumptMoter"] # in kWh
+        self.total_power_regenerated_in_braking = t["TotalPowerConsumptMinus"] # in kWh
+        self.total_travel_distance_km = float(t["TotalTravelDistance"]) / 1000 # assumed to be in meters?
 
-		self.total_electric_mileage = t["TotalElectricMileage"] # ???
-		self.total_co2_reduction = t["TotalCO2Reductiont"] # ??? (yep, extra 't' at the end)
+        self.total_electric_mileage = t["TotalElectricMileage"] # ???
+        self.total_co2_reduction = t["TotalCO2Reductiont"] # ??? (yep, extra 't' at the end)
 
-		self.electricity_rate = r["ElectricPrice"]
-		self.electric_bill = r["ElectricBill"]
-		self.electric_cost_scale = r["ElectricCostScale"] # e.g. "miles/kWh"
+        self.electricity_rate = r["ElectricPrice"]
+        self.electric_bill = r["ElectricBill"]
+        self.electric_cost_scale = r["ElectricCostScale"] # e.g. "miles/kWh"
 
 class CarwingsMyCarFinderResponse(CarwingsResponse):
-	def __init__(self, status):
-		CarwingsResponse.__init__(self, status)
+    def __init__(self, status):
+        CarwingsResponse.__init__(self, status)
 
-		self.latitude = status["lat"]
-		self.longitude = status["lng"]
+        self.latitude = status["lat"]
+        self.longitude = status["lng"]
 """
 {
     "Location": {
