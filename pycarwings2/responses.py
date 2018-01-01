@@ -619,9 +619,10 @@ class CarwingsElectricRateSimulationResponse(CarwingsResponse):
         self.total_acceleration_power_consumption = t.get('TotalPowerConsumptMoter')
         # in kWh
         self.total_power_regenerated_in_braking = t.get('TotalPowerConsumptMinus')
-        self.total_travel_distance_km = float(
-            t.get('TotalTravelDistance')) / 1000  # assumed to be in meters?
-
+        if t.get('TotalTravelDistance'):
+            self.total_travel_distance_km = float(t.get('TotalTravelDistance')) / 1000  # assumed to be in meters?
+        else:
+            self.total_travel_distance_km = None
         self.total_electric_mileage = t.get('TotalElectricMileage')  # ???
         # ??? (yep, extra 't' at the end)
         self.total_co2_reduction = t.get('TotalCO2Reductiont')
