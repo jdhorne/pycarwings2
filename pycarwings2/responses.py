@@ -613,18 +613,18 @@ class CarwingsElectricRateSimulationResponse(CarwingsResponse):
 
         self.month = r["DisplayMonth"]  # e.g. "Feb/2016"
 
-        self.total_number_of_trips = t["TotalNumberOfTrips"]
-        self.total_power_consumption = t["TotalPowerConsumptTotal"]  # in kWh
+        self.total_number_of_trips = t.get('TotalNumberOfTrips')
+        self.total_power_consumption = t.get('TotalPowerConsumptTotal')  # in kWh
         # in kWh
-        self.total_acceleration_power_consumption = t["TotalPowerConsumptMoter"]
+        self.total_acceleration_power_consumption = t.get('TotalPowerConsumptMoter')
         # in kWh
-        self.total_power_regenerated_in_braking = t["TotalPowerConsumptMinus"]
+        self.total_power_regenerated_in_braking = t.get('TotalPowerConsumptMinus')
         self.total_travel_distance_km = float(
-            t["TotalTravelDistance"]) / 1000  # assumed to be in meters?
+            t.get('TotalTravelDistance')) / 1000  # assumed to be in meters?
 
-        self.total_electric_mileage = t["TotalElectricMileage"]  # ???
+        self.total_electric_mileage = t.get('TotalElectricMileage')  # ???
         # ??? (yep, extra 't' at the end)
-        self.total_co2_reduction = t["TotalCO2Reductiont"]
+        self.total_co2_reduction = t.get('TotalCO2Reductiont')
 
         self.electricity_rate = r["ElectricPrice"]
         self.electric_bill = r["ElectricBill"]
