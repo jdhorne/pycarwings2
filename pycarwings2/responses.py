@@ -627,9 +627,9 @@ class CarwingsElectricRateSimulationResponse(CarwingsResponse):
         # ??? (yep, extra 't' at the end)
         self.total_co2_reduction = t.get('TotalCO2Reductiont')
 
-        self.electricity_rate = r["ElectricPrice"]
-        self.electric_bill = r["ElectricBill"]
-        self.electric_cost_scale = r["ElectricCostScale"]  # e.g. "miles/kWh"
+        self.electricity_rate = r.get('ElectricPrice')
+        self.electric_bill = r.get('ElectricBill')
+        self.electric_cost_scale = r.get('ElectricCostScale')  # e.g. "miles/kWh"
 
 
 class CarwingsMyCarFinderResponse(CarwingsResponse):
