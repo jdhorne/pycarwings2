@@ -336,7 +336,7 @@ class CarwingsStartClimateControlResponse(CarwingsResponse):
         CarwingsResponse.__init__(self, status)
 
         self._set_timestamp(status)
-        self._set_cruising_ranges(status)
+        # self._set_cruising_ranges(status)
 
         # e.g. "START_BATTERY", ...?
         self.operation_result = status["operationResult"]
@@ -391,6 +391,7 @@ class CarwingsClimateControlScheduleResponse(CarwingsResponse):
         self.display_last_scheduled_time = status["LastScheduledTime"]
         self.last_scheduled_time = datetime.strptime(
             status["LastScheduledTime"], "%b %d, %Y %I:%M %p")
+
 
         # unknown purpose; don't surface to avoid confusion
         # self.target_date = status["TargetDate"]
@@ -614,13 +615,17 @@ class CarwingsElectricRateSimulationResponse(CarwingsResponse):
         self.month = r["DisplayMonth"]  # e.g. "Feb/2016"
 
         self.total_number_of_trips = t.get('TotalNumberOfTrips')
-        self.total_power_consumption = t.get('TotalPowerConsumptTotal')  # in kWh
+        self.total_power_consumption = t.get(
+            'TotalPowerConsumptTotal')  # in kWh
         # in kWh
-        self.total_acceleration_power_consumption = t.get('TotalPowerConsumptMoter')
+        self.total_acceleration_power_consumption = t.get(
+            'TotalPowerConsumptMoter')
         # in kWh
-        self.total_power_regenerated_in_braking = t.get('TotalPowerConsumptMinus')
+        self.total_power_regenerated_in_braking = t.get(
+            'TotalPowerConsumptMinus')
         if t.get('TotalTravelDistance'):
-            self.total_travel_distance_km = float(t.get('TotalTravelDistance')) / 1000  # assumed to be in meters?
+            self.total_travel_distance_km = float(
+                t.get('TotalTravelDistance')) / 1000  # assumed to be in meters?
         else:
             self.total_travel_distance_km = None
         self.total_electric_mileage = t.get('TotalElectricMileage')  # ???
@@ -629,7 +634,8 @@ class CarwingsElectricRateSimulationResponse(CarwingsResponse):
 
         self.electricity_rate = r.get('ElectricPrice')
         self.electric_bill = r.get('ElectricBill')
-        self.electric_cost_scale = r.get('ElectricCostScale')  # e.g. "miles/kWh"
+        self.electric_cost_scale = r.get(
+            'ElectricCostScale')  # e.g. "miles/kWh"
 
 
 class CarwingsMyCarFinderResponse(CarwingsResponse):
