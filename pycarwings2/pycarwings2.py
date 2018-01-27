@@ -68,7 +68,7 @@ from requests import RequestException
 import json
 import logging
 from datetime import date
-from responses import *
+from .responses import *
 import base64
 from Crypto.Cipher import Blowfish
 
@@ -83,10 +83,6 @@ def _PKCS5Padding(string):
     packingLength = 8 - byteNum % 8
     appendage = chr(packingLength) * packingLength
     return string + appendage
-
-
-class CarwingsError(Exception):
-    pass
 
 
 class Session(object):
@@ -120,6 +116,8 @@ class Session(object):
         req = requests.Request('POST', url=BASE_URL + endpoint, data=params).prepare()
 
         log.debug("invoking carwings API: %s" % req.url)
+        # for k, v in params.items():
+        #     log.debug("{}: {} {}".format(k, v, type(v)))
         log.debug("params: %s" % json.dumps(params, sort_keys=True, indent=3, separators=(',', ': ')))
 
         try:
@@ -156,7 +154,7 @@ class Session(object):
         c1 = Blowfish.new(ret.baseprm, Blowfish.MODE_ECB)
         packedPassword = _PKCS5Padding(self.password)
         encryptedPassword = c1.encrypt(packedPassword)
-        encodedPassword = base64.standard_b64encode(encryptedPassword)
+        encodedPassword = base64.standard_b64encode(encryptedPassword).decode()
 
         response = self._request("UserLoginRequest.php", {
             "RegionCode": self.region_code,

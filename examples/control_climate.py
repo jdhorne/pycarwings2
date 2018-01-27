@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 
 import pycarwings2
 import logging
@@ -6,7 +6,7 @@ import sys
 from datetime import datetime
 
 if len(sys.argv) < 2:
-    print "Need input either 'start' or 'stop' as argument"
+    print("Need input either 'start' or 'stop' as argument")
     exit()
 
 logging.basicConfig(stream=sys.stdout, level=logging.ERROR)
@@ -19,17 +19,17 @@ path = "/home/pi/scripts/"
 
 logging.debug("login = %s , password = %s" % (username, password))
 
-print "Prepare Session"
+print("Prepare Session")
 s = pycarwings2.Session(username, password, "NE")
-print "Login..."
+print("Login...")
 leaf = s.get_leaf()
 
 if str.lower(sys.argv[1]) == 'start':
-    print "Starting climate control"
+    print("Starting climate control")
     result_key = leaf.start_climate_control()
 
 if str.lower(sys.argv[1]) == 'stop':
-    print "Stopping climate control"
+    print("Stopping climate control")
     result_key = leaf.stop_climate_control()
 
 with open(path + 'climate_control.log', 'a') as file:
