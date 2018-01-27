@@ -9,7 +9,7 @@ import time
 logging.basicConfig(stream=sys.stdout, level=logging.ERROR)
 
 
-parser = SafeConfigParser()
+parser = ConfigParser()
 candidates = ['config.ini', 'my_config.ini']
 found = parser.read(candidates)
 
