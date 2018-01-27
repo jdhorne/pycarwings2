@@ -1,14 +1,10 @@
-#!/usr/bin/python
-
-#import sys
-#sys.path.append('/home/ruben/leaf/pycarwings2/pycarwings2')
+#!/usr/bin/env python2
 
 import pycarwings2
-import time
 from ConfigParser import SafeConfigParser
 import logging
 import sys
-import pprint
+import time
 
 logging.basicConfig(stream=sys.stdout, level=logging.ERROR)
 
@@ -25,14 +21,14 @@ logging.debug("login = %s , password = %s" % (username, password))
 print "Prepare Session"
 s = pycarwings2.Session(username, password, "NE")
 print "Login..."
-l = s.get_leaf()
+leaf = s.get_leaf()
 
 print "request_location"
 
-result_key = l.request_location()
+result_key = leaf.request_location()
 
 while True:
-    location_status = l.get_status_from_location(result_key)
+    location_status = leaf.get_status_from_location(result_key)
     if location_status is None:
         print "Waiting for response (sleep 10)"
         time.sleep(10)

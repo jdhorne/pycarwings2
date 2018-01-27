@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 
 import pycarwings2
 import time
@@ -22,10 +22,10 @@ logging.debug("login = %s , password = %s" % (username, password))
 print "Prepare Session"
 s = pycarwings2.Session(username, password, "NE")
 print "Login..."
-l = s.get_leaf()
+leaf = s.get_leaf()
 
 print "get_latest_battery_status"
-leaf_info = l.get_latest_battery_status()
+leaf_info = leaf.get_latest_battery_status()
 print "date %s" % leaf_info.answer["BatteryStatusRecords"]["OperationDateAndTime"]
 print "date %s" % leaf_info.answer["BatteryStatusRecords"]["NotificationDateAndTime"]
 print "battery_capacity2 %s" % leaf_info.answer["BatteryStatusRecords"]["BatteryStatus"]["BatteryCapacity"]
@@ -47,22 +47,22 @@ print "leaf_info.battery_percent %s" % leaf_info.battery_percent
 print "leaf_info.state_of_charge %s" % leaf_info.state_of_charge
 
 
-result_key = l.request_update()
+result_key = leaf.request_update()
 print "start sleep 10"
 time.sleep(10)  # sleep 60 seconds to give request time to process
 print "end sleep 10"
-battery_status = l.get_status_from_update(result_key)
+battery_status = leaf.get_status_from_update(result_key)
 while battery_status is None:
     print "not update"
     time.sleep(10)
-    battery_status = l.get_status_from_update(result_key)
+    battery_status = leaf.get_status_from_update(result_key)
 
 pprint.pprint(battery_status.answer)
 
-# result_key = l.start_climate_control()
+# result_key = leaf.start_climate_control()
 # time.sleep(60)
-# start_cc_result = l.get_start_climate_control_result(result_key)
+# start_cc_result = leaf.get_start_climate_control_result(result_key)
 
-# result_key = l.stop_climate_control()
+# result_key = leaf.stop_climate_control()
 # time.sleep(60)
-# stop_cc_result = l.get_stop_climate_control_result(result_key)
+# stop_cc_result = leaf.get_stop_climate_control_result(result_key)

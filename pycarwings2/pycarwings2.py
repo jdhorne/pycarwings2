@@ -64,14 +64,13 @@ this field will contain the value "ELECTRIC_WAVE_ABNORMAL". Odd.
 """
 
 import requests
-from requests import Request, Session, RequestException
+from requests import RequestException
 import json
 import logging
 from datetime import date
 from responses import *
 import base64
 from Crypto.Cipher import Blowfish
-import binascii
 
 BASE_URL = "https://gdcportalgw.its-mo.com/gworchest_160803A/gdc/"
 
@@ -118,7 +117,7 @@ class Session(object):
         else:
             params["custom_sessionid"] = ""
 
-        req = Request('POST', url=BASE_URL + endpoint, data=params).prepare()
+        req = requests.Request('POST', url=BASE_URL + endpoint, data=params).prepare()
 
         log.debug("invoking carwings API: %s" % req.url)
         log.debug("params: %s" % json.dumps(params, sort_keys=True, indent=3, separators=(',', ': ')))
