@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
 from os.path import join
-
 from setuptools import setup, find_packages
-
 
 NAME = 'pycarwings2'
 PACKAGE = NAME.replace('-', '_')
@@ -18,13 +16,16 @@ def get_version():
             raise Exception(
                 '__version__ is not defined in %s.__init__' % PACKAGE)
 
+
 setup(
     name=NAME,
     version=get_version(),
     author='haykinson',
     author_email='',
     description='Python library for interacting with the Nissan CARWINGS telematics service',
-    install_requires= [ 'PyYAML' , 'iso8601', 'requests', 'pycrypto' ],
     include_package_data=True,
     packages=find_packages(),
+    install_requires=['PyYAML', 'iso8601', 'requests', 'pycrypto'],
+    setup_requires=('pytest-runner'),
+    tests_require=('pytest', 'pytest-cov', 'pytest-flake8'),
 )

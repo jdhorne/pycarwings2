@@ -1,24 +1,29 @@
 # pycarwings2
+
 Library for connecting and interacting with Nissan's CARWINGS service for Nissan LEAF cars.
 Uses the (newly secure!) REST/JSON API rather than the previous XML-based API.
 
 Inspired by original pycarwings library: https://github.com/haykinson/pycarwings
 
-# asynchronous methods
+## Asynchronous methods
 
 Note that several of the most interesting methods in the CARWINGS service are
 asynchronous--you ask the service to do something, and it just says "ok". You then
 have to poll a corresponding method to find out if the operation was successful.
 
 More details are located at the top of [pycarwings2.py](https://github.com/jdhorne/pycarwings2/blob/master/pycarwings2/pycarwings2.py).
-# Installation
-pip install git+https://github.com/jdhorne/pycarwings2.git
 
-# example usage
+## Installation
 
-exemples/get-leaf-info.py
+    pip install requests pycrypto configparser
+    pip install git+https://github.com/jdhorne/pycarwings2.git
 
-# license
+## Example usage
+
+./examples/get-leaf-info.py
+
+## License
+
 Copyright 2016 Jason Horne
 
 Licensed under the Apache License, Version 2.0 (the "License");
