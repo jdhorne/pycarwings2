@@ -14,7 +14,6 @@
 
 import logging
 from datetime import timedelta, datetime
-# from .pycarwings2 import *
 
 log = logging.getLogger(__name__)
 

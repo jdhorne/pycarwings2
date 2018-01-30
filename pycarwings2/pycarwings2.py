@@ -130,7 +130,7 @@ class Session(object):
         except RequestException:
             log.warning('HTTP Request failed')
 
-        j = json.loads(response.content)
+        j = json.loads(response.content.decode())
 
         if "message" in j and j["message"] == "INVALID PARAMS":
             log.error("carwings error %s: %s" % (j["message"], j["status"]))
