@@ -36,6 +36,7 @@ def _time_remaining(t):
 
 class CarwingsResponse:
     def __init__(self, response):
+        self.raw = response
         op_result = None
         if ("operationResult" in response):
             op_result = response["operationResult"]
