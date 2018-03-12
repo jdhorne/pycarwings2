@@ -16,7 +16,7 @@ pip install git+https://github.com/jdhorne/pycarwings2.git
 
 # example usage
 
-exemples/get-leaf-info.py
+examples/get-leaf-info.py
 
 # license
 Copyright 2016 Jason Horne
