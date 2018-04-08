@@ -10,9 +10,9 @@ Note that several of the most interesting methods in the CARWINGS service are
 asynchronous--you ask the service to do something, and it just says "ok". You then
 have to poll a corresponding method to find out if the operation was successful.
 
-More details are located at the top of [pycarwings2.py](https://github.com/jdhorne/pycarwings2/blob/master/pycarwings2/pycarwings2.py).
+More details are located at the top of [pycarwings2.py](https://github.com/filcole/pycarwings2/blob/HomeAssistant/pycarwings2/pycarwings2.py).
 # Installation
-pip install git+https://github.com/jdhorne/pycarwings2.git
+pip3 install git+https://github.com/filcole/pycarwings2.git HomeAssistant
 
 # example usage
 
@@ -20,6 +20,7 @@ examples/get-leaf-info.py
 
 # license
 Copyright 2016 Jason Horne
+Copyright 2018 Phil Cole
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
