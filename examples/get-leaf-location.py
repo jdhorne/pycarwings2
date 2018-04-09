@@ -1,38 +1,37 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 #import sys
 # sys.path.append('/home/ruben/leaf/pycarwings2/pycarwings2')
 
 import pycarwings2
-import time
-from ConfigParser import SafeConfigParser
+from configparser import ConfigParser
 import logging
 import sys
-import pprint
+import time
+
 
 logging.basicConfig(stream=sys.stdout, level=logging.ERROR)
 
-
-parser = SafeConfigParser()
+parser = ConfigParser()
 candidates = ['config.ini', 'my_config.ini']
 found = parser.read(candidates)
 
 username = parser.get('get-leaf-info', 'username')
 password = parser.get('get-leaf-info', 'password')
 
-logging.debug("login = %s , password = %s" % (username, password))
+logging.debug("login = %s, password = %s" % (username, password))
 
-print "Prepare Session"
-s = pycarwings2.Session(username, password, "NE")
-print "Login..."
-l = s.get_leaf()
+print("Prepare Session")
+session = pycarwings2.Session(username, password, "NE")
+print("Login...")
+leaf = session.get_leaf()
 
-print "request_location"
+print("request_location")
 
-result_key = l.request_location()
+result_key = leaf.request_location()
 
 while True:
-    location_status = l.get_status_from_location(result_key)
+    location_status = leaf.get_status_from_location(result_key)
     if location_status is None:
         print("Waiting for response (sleep 10)")
         time.sleep(10)
