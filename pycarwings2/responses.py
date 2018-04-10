@@ -281,6 +281,23 @@ class CarwingsLatestClimateControlStatusResponse(CarwingsResponse):
             },
             "OperationDateAndTime":""
         }
+
+    error:
+        {
+            "status":200,
+            "RemoteACRecords":{
+                "OperationResult":"ELECTRIC_WAVE_ABNORMAL",
+                "OperationDateAndTime":"2018/04/08 10:00
+                "RemoteACOperation":"START",
+                "ACStartStopDateAndTime":"08-Apr-2018 11:06'
+                "ACStartStopURL":"",
+                "PluginState":"INVALID",
+                "ACDurationBatterySec":"900",
+                "ACDurationPluggedSec":"7200"
+                "PreAC_unit":"C"
+                "PreAC_temp":"22"
+            }
+        }
     """
     def __init__(self, status):
         CarwingsResponse.__init__(self, status["RemoteACRecords"])
