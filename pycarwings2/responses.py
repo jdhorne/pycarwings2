@@ -48,8 +48,10 @@ class CarwingsResponse:
             raise pycarwings2.CarwingsError("could not establish communications with vehicle")
 
     def _set_cruising_ranges(self, status, off_key="cruisingRangeAcOff", on_key="cruisingRangeAcOn"):
-        self.cruising_range_ac_off_km = float(status[off_key]) / 1000
-        self.cruising_range_ac_on_km = float(status[on_key]) / 1000
+        if off_key in status:
+            self.cruising_range_ac_off_km = float(status[off_key]) / 1000
+        if on_key in status:
+            self.cruising_range_ac_on_km = float(status[on_key]) / 1000
 
     def _set_timestamp(self, status):
         self.timestamp = datetime.strptime(status["timeStamp"], "%Y-%m-%d %H:%M:%S") # "2016-01-02 17:17:38"
