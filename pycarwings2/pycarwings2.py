@@ -369,7 +369,10 @@ class Leaf:
             "TimeFrom": self.bound_time
         })
         if response["status"] == 200:
-            return CarwingsLatestBatteryStatusResponse(response)
+            if "BatteryStatusRecords" in response:
+                return CarwingsLatestBatteryStatusResponse(response)
+            else
+                log.warning('no battery status record returned by server')
 
         return None
 
