@@ -11,16 +11,16 @@ logging.basicConfig(stream=sys.stdout, level=logging.ERROR)
 
 
 parser = SafeConfigParser()
-candidates = [ 'config.ini', 'my_config.ini' ]
+candidates = ['config.ini', 'my_config.ini']
 found = parser.read(candidates)
 
 username = parser.get('get-leaf-info', 'username')
 password = parser.get('get-leaf-info', 'password')
 
-logging.debug("login = %s , password = %s" % ( username , password)  )
+logging.debug("login = %s , password = %s" % (username, password))
 
 print "Prepare Session"
-s = pycarwings2.Session(username, password , "NE")
+s = pycarwings2.Session(username, password, "NE")
 print "Login..."
 l = s.get_leaf()
 
@@ -49,20 +49,20 @@ print "leaf_info.state_of_charge %s" % leaf_info.state_of_charge
 
 result_key = l.request_update()
 print "start sleep 10"
-time.sleep(10) # sleep 60 seconds to give request time to process
+time.sleep(10)  # sleep 60 seconds to give request time to process
 print "end sleep 10"
 battery_status = l.get_status_from_update(result_key)
 while battery_status is None:
-	print "not update"
-        time.sleep(10)
-	battery_status = l.get_status_from_update(result_key)
+    print "not update"
+    time.sleep(10)
+    battery_status = l.get_status_from_update(result_key)
 
 pprint.pprint(battery_status.answer)
 
 #result_key = l.start_climate_control()
-#time.sleep(60)
+# time.sleep(60)
 #start_cc_result = l.get_start_climate_control_result(result_key)
 
 #result_key = l.stop_climate_control()
-#time.sleep(60)
+# time.sleep(60)
 #stop_cc_result = l.get_stop_climate_control_result(result_key)
