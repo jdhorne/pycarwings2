@@ -73,7 +73,7 @@ import base64
 from Crypto.Cipher import Blowfish
 import binascii
 
-BASE_URL = "https://gdcportalgw.its-mo.com/api_v180117_NE/gdc/"
+BASE_URL = "https://gdcportalgw.its-mo.com/gworchest_160803EC/gdc/"
 
 log = logging.getLogger(__name__)
 
