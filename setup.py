@@ -1,35 +1,58 @@
-#!/usr/bin/env python
-
-from os.path import join
 from setuptools import setup, find_packages
+import codecs
+import os
+import re
 
 NAME = 'pycarwings2'
-PACKAGE = NAME.replace('-', '_')
+
+here = os.path.abspath(os.path.dirname(__file__))
+
+def read(*parts):
+    with codecs.open(os.path.join(here, *parts), 'r') as fp:
+        return fp.read()
 
 
-def get_version():
-    with open(join(PACKAGE, '__init__.py')) as fileobj:
-        for line in fileobj:
-            if line.startswith('__version__ ='):
-                return line.split('=', 1)[1].strip()[1:-1]
-        else:
-            raise Exception(
-                '__version__ is not defined in %s.__init__' % PACKAGE)
+def find_version(*file_paths):
+    version_file = read(*file_paths)
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
+                              version_file, re.M)
+    if version_match:
+        return version_match.group(1)
+    raise RuntimeError("Unable to find version string")
+
+
+# Get the long description from the README file
+with open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
+
+long_description = read('README.md')
 
 #FIXME: python2 requires pycrpto instead of pycryptodome
 setup(
     name=NAME,
-    version=get_version(),
-    author='haykinson',
-    author_email='',
-    description='Python library for interacting with the Nissan CARWINGS telematics service',
+    version=find_version(NAME, "__init__.py"),
+    url='https://github.com/filcole/pycarwings2',
+    author='Phil Cole',
+    author_email='filcole@gmail.com',
+    description='Python library for interacting with the Nissan Leaf Carwings telematics service',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    classifiers=[
+        'Development Status : 4 - Beta',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: Apache License Version 2.0',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+    ],
+    keywords='nissan leaf carwings nissan+you',
     include_package_data=True,
     install_requires=[
         'PyYAML',
         'iso8601',
         'requests',
-        'pycryptodome'],
+        'pycryptodome>=3.7'],
     packages=find_packages(),
     setup_requires=('pytest-runner'),
-    tests_require=('pytest', 'pytest-cov', 'pytest-flake8'),
+    tests_require=['pytest', 'pytest-cov', 'pytest-flake8'],
 )
