@@ -27,7 +27,7 @@ with open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
 
 long_description = read('README.md')
 
-#FIXME: python2 requires pycrpto instead of pycryptodome
+# Note python2 required pycrpto instead of pycryptodome
 setup(
     name=NAME,
     version=find_version(NAME, "__init__.py"),
