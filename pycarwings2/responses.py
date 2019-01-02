@@ -54,7 +54,7 @@ class CarwingsResponse:
             self.cruising_range_ac_on_km = float(status[on_key]) / 1000
 
     def _set_timestamp(self, status):
-        self.timestamp = datetime.strptime(status["timeStamp"], "%Y-%m-%d %H:%M:%S") # "2016-01-02 17:17:38"
+        self.timestamp = datetime.strptime(status["timeStamp"], "%Y-%m-%d %H:%M:%S")   # "2016-01-02 17:17:38"
 
 
 class CarwingsInitialAppResponse(CarwingsResponse):
@@ -104,12 +104,12 @@ class CarwingsLoginResponse(CarwingsResponse):
             "CustomerInfo": {
                 "UserId":"AB12345678",
                 "Language":"en-US",
-                "Timezone":"America\/New_York",
+                "Timezone":"America/New_York",
                 "RegionCode":"NNA",
                 "OwnerId":"1234567890",
                 "Nickname":"Bravo456",
                 "Country":"US",
-                "VehicleImage":"\/content\/language\/default\/images\/img\/ph_car.jpg",
+                "VehicleImage":"/content/language/default/images/img/ph_car.jpg",
                 "UserVehicleBoundDurationSec":"999971200",
                 "VehicleInfo": {
                     "VIN":"1ABCDEFG2HIJKLM3N",
@@ -220,13 +220,13 @@ class CarwingsBatteryStatusResponse(CarwingsResponse):
 
         self._set_timestamp(status)
         self._set_cruising_ranges(status)
-                
+
         self.answer = status
 
         self.battery_capacity = status["batteryCapacity"]
         self.battery_degradation = status["batteryDegradation"]
 
-        self.is_connected = ("NOT_CONNECTED" != status["pluginState"]) # fun double negative
+        self.is_connected = ("NOT_CONNECTED" != status["pluginState"])    # fun double negative
         self.plugin_state = status["pluginState"]
 
         self.charging_status = status["chargeMode"]
@@ -335,9 +335,9 @@ class CarwingsStartClimateControlResponse(CarwingsResponse):
         self._set_timestamp(status)
         self._set_cruising_ranges(status)
 
-        self.operation_result = status["operationResult"] # e.g. "START_BATTERY", ...?
+        self.operation_result = status["operationResult"]     # e.g. "START_BATTERY", ...?
         self.ac_continue_time = timedelta(minutes=float(status["acContinueTime"]))
-        self.hvac_status = status["hvacStatus"]  # "ON" or "OFF"
+        self.hvac_status = status["hvacStatus"]               # "ON" or "OFF"
         self.is_hvac_running = ("ON" == self.hvac_status)
 
 
@@ -356,7 +356,7 @@ class CarwingsStopClimateControlResponse(CarwingsResponse):
         CarwingsResponse.__init__(self, status)
 
         self._set_timestamp(status)
-        self.hvac_status = status["hvacStatus"]  # "ON" or "OFF"
+        self.hvac_status = status["hvacStatus"]                # "ON" or "OFF"
         self.is_hvac_running = ("ON" == self.hvac_status)
 
 
@@ -368,15 +368,15 @@ class CarwingsClimateControlScheduleResponse(CarwingsResponse):
             "LastScheduledTime":"Feb  9, 2016 05:39 PM",
             "ExecuteTime":"2016-02-10 01:00:00",
             "DisplayExecuteTime":"Feb  9, 2016 08:00 PM",
-            "TargetDate":"2016\/02\/10 01:00"
+            "TargetDate":"2016/02/10 01:00"
         }
     """
     def __init__(self, status):
         CarwingsResponse.__init__(self, status)
 
-        self.display_execute_time = status["DisplayExecuteTime"] # displayable, timezone-adjusted
-        self.execute_time = datetime.strptime(status["ExecuteTime"] + " UTC", "%Y-%m-%d %H:%M:%S %Z") # GMT
-        self.display_last_scheduled_time = status["LastScheduledTime"] # displayable, timezone-adjusted
+        self.display_execute_time = status["DisplayExecuteTime"]         # displayable, timezone-adjusted
+        self.execute_time = datetime.strptime(status["ExecuteTime"] + " UTC", "%Y-%m-%d %H:%M:%S %Z")   # GMT
+        self.display_last_scheduled_time = status["LastScheduledTime"]   # displayable, timezone-adjusted
         self.last_scheduled_time = datetime.strptime(status["LastScheduledTime"], "%b %d, %Y %I:%M %p")
         # unknown purpose; don't surface to avoid confusion
         # self.target_date = status["TargetDate"]
@@ -400,7 +400,7 @@ class CarwingsDrivingAnalysisResponse(CarwingsResponse):
                     "PowerConsumptAUXLevel":"5",
                     "DisplayDate":"Feb  3, 16"
                 },
-                "ElectricCostScale":"miles\/kWh"
+                "ElectricCostScale":"miles/kWh"
             },
             "AdviceList":{
                 "Advice":{
@@ -421,21 +421,21 @@ class CarwingsDrivingAnalysisResponse(CarwingsResponse):
         self.electric_mileage_level = summary["ElectricMileageLevel"]
 
         # "acceleration performance": "electricity used for motor activation over 1km", Watt-Hours
-        self.power_consumption_moter = summary["PowerConsumptMoter"] # ???
+        self.power_consumption_moter = summary["PowerConsumptMoter"]
         # rating for above, scale of 1-5
-        self.power_consumption_moter_level = summary["PowerConsumptMoterLevel"] # ???
+        self.power_consumption_moter_level = summary["PowerConsumptMoterLevel"]
 
         # Watt-Hours generated by braking
-        self.power_consumption_minus = summary["PowerConsumptMinus"] # ???
+        self.power_consumption_minus = summary["PowerConsumptMinus"]
         # rating for above, scale of 1-5
-        self.power_consumption_minus_level = summary["PowerConsumptMinusLevel"] # ???
+        self.power_consumption_minus_level = summary["PowerConsumptMinusLevel"]
 
         # Electricity used by aux devices, Watt-Hours
-        self.power_consumption_aux = summary["PowerConsumptAUX"] # ???
+        self.power_consumption_aux = summary["PowerConsumptAUX"]
         # rating for above, scale of 1-5
-        self.power_consumption_aux_level = summary["PowerConsumptAUXLevel"] # ???
+        self.power_consumption_aux_level = summary["PowerConsumptAUXLevel"]
 
-        self.display_date = summary["DisplayDate"] # "Feb  3, 16"
+        self.display_date = summary["DisplayDate"]     # "Feb  3, 16"
 
         self.electric_cost_scale = status["DriveAnalysisBasicScreenResponsePersonalData"]["ElectricCostScale"]
 
@@ -473,8 +473,8 @@ class CarwingsLatestBatteryStatusResponse(CarwingsResponse):
                     "HourRequiredToFull":"4",
                     "MinutesRequiredToFull":"0"
                 },
-                "NotificationDateAndTime":"2016\/02\/10 04:10",
-                "TargetDate":"2016\/02\/10 04:09"
+                "NotificationDateAndTime":"2016/02/10 04:10",
+                "TargetDate":"2016/02/10 04:09"
             }
         }
 
@@ -495,8 +495,8 @@ class CarwingsLatestBatteryStatusResponse(CarwingsResponse):
                 "PluginState":"QC_CONNECTED",
                 "CruisingRangeAcOn":"107136.0",
                 "CruisingRangeAcOff":"115776.0",
-                "NotificationDateAndTime":"2016\/02\/14 20:28",
-                "TargetDate":"2016\/02\/14 20:28"
+                "NotificationDateAndTime":"2016/02/14 20:28",
+                "TargetDate":"2016/02/14 20:28"
             }
         }
 
@@ -536,11 +536,11 @@ class CarwingsLatestBatteryStatusResponse(CarwingsResponse):
         self.battery_capacity = bs["BatteryCapacity"]
         self.battery_remaining_amount = bs["BatteryRemainingAmount"]
         self.charging_status = bs["BatteryChargingStatus"]
-        self.is_charging = ("NOT_CHARGING" != bs["BatteryChargingStatus"]) # double negatives are fun
+        self.is_charging = ("NOT_CHARGING" != bs["BatteryChargingStatus"])    # double negatives are fun
         self.is_quick_charging = ("RAPIDLY_CHARGING" == bs["BatteryChargingStatus"])
 
         self.plugin_state = recs["PluginState"]
-        self.is_connected = ("NOT_CONNECTED" != recs["PluginState"]) # another double negative, for the kids
+        self.is_connected = ("NOT_CONNECTED" != recs["PluginState"])          # another double negative
         self.is_connected_to_quick_charger = ("QC_CONNECTED" == recs["PluginState"])
 
         self._set_cruising_ranges(recs, off_key="CruisingRangeAcOff", on_key="CruisingRangeAcOn")
@@ -578,20 +578,20 @@ class CarwingsElectricRateSimulationResponse(CarwingsResponse):
         r = status["PriceSimulatorDetailInfoResponsePersonalData"]
         t = r["PriceSimulatorTotalInfo"]
 
-        self.month = r["DisplayMonth"] # e.g. "Feb/2016"
+        self.month = r["DisplayMonth"]     # e.g. "Feb/2016"
 
         self.total_number_of_trips = t["TotalNumberOfTrips"]
-        self.total_power_consumption = t["TotalPowerConsumptTotal"] # in kWh
-        self.total_acceleration_power_consumption = t["TotalPowerConsumptMoter"] # in kWh
-        self.total_power_regenerated_in_braking = t["TotalPowerConsumptMinus"] # in kWh
-        self.total_travel_distance_km = float(t["TotalTravelDistance"]) / 1000 # assumed to be in meters?
+        self.total_power_consumption = t["TotalPowerConsumptTotal"]                # in kWh
+        self.total_acceleration_power_consumption = t["TotalPowerConsumptMoter"]   # in kWh
+        self.total_power_regenerated_in_braking = t["TotalPowerConsumptMinus"]     # in kWh
+        self.total_travel_distance_km = float(t["TotalTravelDistance"]) / 1000     # assumed to be in meters
 
-        self.total_electric_mileage = t["TotalElectricMileage"] # ???
-        self.total_co2_reduction = t["TotalCO2Reductiont"] # ??? (yep, extra 't' at the end)
+        self.total_electric_mileage = t["TotalElectricMileage"]
+        self.total_co2_reduction = t["TotalCO2Reductiont"]   # (yep, extra 't' at the end)
 
         self.electricity_rate = r["ElectricPrice"]
         self.electric_bill = r["ElectricBill"]
-        self.electric_cost_scale = r["ElectricCostScale"] # e.g. "miles/kWh"
+        self.electric_cost_scale = r["ElectricCostScale"]    # e.g. "miles/kWh"
 
 
 class CarwingsMyCarFinderResponse(CarwingsResponse):
