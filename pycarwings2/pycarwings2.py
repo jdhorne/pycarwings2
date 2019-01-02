@@ -64,7 +64,7 @@ this field will contain the value "ELECTRIC_WAVE_ABNORMAL". Odd.
 """
 
 import requests
-from requests import Request, Session, RequestException
+from requests import Request, RequestException
 import json
 import logging
 from datetime import date
@@ -77,6 +77,7 @@ BASE_URL = "https://gdcportalgw.its-mo.com/gworchest_160803A/gdc/"
 
 log = logging.getLogger(__name__)
 
+
 # from http://stackoverflow.com/questions/17134100/python-blowfish-encryption
 def _PKCS5Padding(string):
     byteNum = len(string)
@@ -84,8 +85,10 @@ def _PKCS5Padding(string):
     appendage = chr(packingLength) * packingLength
     return string + appendage
 
+
 class CarwingsError(Exception):
     pass
+
 
 class Session(object):
     """Maintains a connection to CARWINGS, refreshing it when needed"""
@@ -107,7 +110,6 @@ class Session(object):
             ret = self._request(endpoint, params)
 
         return ret
-
 
     def _request(self, endpoint, params):
         params["initial_app_strings"] = "geORNtsZe5I4lRGjG9GZiA"
@@ -131,13 +133,13 @@ class Session(object):
         except RequestException:
             log.warning('HTTP Request failed')
 
-        j = json.loads(response.content)
+        j = json.loads(response.text)
 
         if "message" in j and j["message"] == "INVALID PARAMS":
-            log.error("carwings error %s: %s" % (j["message"], j["status"]) )
+            log.error("carwings error %s: %s" % (j["message"], j["status"]))
             raise CarwingsError("INVALID PARAMS")
         if "ErrorMessage" in j:
-            log.error("carwings error %s: %s" % (j["ErrorCode"], j["ErrorMessage"]) )
+            log.error("carwings error %s: %s" % (j["ErrorCode"], j["ErrorMessage"]))
             raise CarwingsError
 
         return j
@@ -152,7 +154,7 @@ class Session(object):
         })
         ret = CarwingsInitialAppResponse(response)
 
-        c1  = Blowfish.new(ret.baseprm, Blowfish.MODE_ECB)
+        c1 = Blowfish.new(ret.baseprm, Blowfish.MODE_ECB)
         packedPassword = _PKCS5Padding(self.password)
         encryptedPassword = c1.encrypt(packedPassword)
         encodedPassword = base64.standard_b64encode(encryptedPassword)
@@ -206,7 +208,7 @@ class Leaf:
             "DCMID": self.session.dcm_id,
             "VIN": self.vin,
             "tz": self.session.tz,
-            "UserId": self.session.gdc_user_id, # this userid is the 'gdc' userid
+            "UserId": self.session.gdc_user_id,     # this userid is the 'gdc' userid
         })
         return response["resultKey"]
 
@@ -242,7 +244,7 @@ class Leaf:
             "DCMID": self.session.dcm_id,
             "VIN": self.vin,
             "tz": self.session.tz,
-            "UserId": self.session.gdc_user_id, # this userid is the 'gdc' userid
+            "UserId": self.session.gdc_user_id,     # this userid is the 'gdc' userid
             "resultKey": result_key,
         })
         if response["responseFlag"] == "1":
@@ -267,7 +269,7 @@ class Leaf:
             "DCMID": self.session.dcm_id,
             "VIN": self.vin,
             "tz": self.session.tz,
-            "UserId": self.session.gdc_user_id, # this userid is the 'gdc' userid
+            "UserId": self.session.gdc_user_id,     # this userid is the 'gdc' userid
             "resultKey": result_key,
         })
         if response["responseFlag"] == "1":
@@ -415,7 +417,7 @@ class Leaf:
             "DCMID": self.session.dcm_id,
             "VIN": self.vin,
             "tz": self.session.tz,
-            "UserId": self.session.gdc_user_id, # this userid is the 'gdc' userid
+            "UserId": self.session.gdc_user_id,     # this userid is the 'gdc' userid
         })
         return response["resultKey"]
 
