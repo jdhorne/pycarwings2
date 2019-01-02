@@ -24,6 +24,14 @@ var/
 .installed.cfg
 *.egg
 
+# Symbolic links
+lib64
+
+# Virtual environments
+bin/
+share/
+pyvenv.cfg
+
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
