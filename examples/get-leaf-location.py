@@ -1,8 +1,5 @@
 #!/usr/bin/env python
 
-#import sys
-# sys.path.append('/home/ruben/leaf/pycarwings2/pycarwings2')
-
 import pycarwings2
 from configparser import ConfigParser
 import logging
@@ -18,11 +15,12 @@ found = parser.read(candidates)
 
 username = parser.get('get-leaf-info', 'username')
 password = parser.get('get-leaf-info', 'password')
+region = parser.get('get-leaf-info', 'region')
 
-logging.debug("login = %s, password = %s" % (username, password))
+logging.debug("login = %s, password = %s, region = %s" % (username, password, region))
 
 print("Prepare Session")
-session = pycarwings2.Session(username, password, "NE")
+session = pycarwings2.Session(username, password, region)
 print("Login...")
 leaf = session.get_leaf()
 
@@ -42,6 +40,6 @@ while True:
         # OpenStreetMap url, ctrl click in terminal to open browser,
         # for example, my parking lot ;)
         # http://www.openstreetmap.org/search?query=52.37309+4.89217#map=19/52.37310/4.89220
-        z = 19 # zoom level, lower is bigger area
-        print("http://www.openstreetmap.org/search?query={}%20{}#map={}/{}/{}".format(lat,lon,z,lat,lon))
+        z = 19        # zoom level, lower is bigger area
+        print("http://www.openstreetmap.org/search?query={}%20{}#map={}/{}/{}".format(lat, lon, z, lat, lon))
         break
