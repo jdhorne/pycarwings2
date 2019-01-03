@@ -121,7 +121,10 @@ class Session(object):
         req = Request('POST', url=BASE_URL + endpoint, data=params).prepare()
 
         log.debug("invoking carwings API: %s" % req.url)
-        log.debug("params: %s" % json.dumps(params, sort_keys=True, indent=3, separators=(',', ': ')))
+        log.debug("params: %s" % json.dumps(
+            { k: v.decode('utf-8') if isinstance(v, bytes) else v for k,v in params.items()},
+            sort_keys=True, indent=3, separators=(',', ': '))
+        )
 
         try:
             sess = requests.Session()
@@ -154,9 +157,9 @@ class Session(object):
         })
         ret = CarwingsInitialAppResponse(response)
 
-        c1 = Blowfish.new(ret.baseprm, Blowfish.MODE_ECB)
+        c1 = Blowfish.new(ret.baseprm.encode(), Blowfish.MODE_ECB)
         packedPassword = _PKCS5Padding(self.password)
-        encryptedPassword = c1.encrypt(packedPassword)
+        encryptedPassword = c1.encrypt(packedPassword.encode())
         encodedPassword = base64.standard_b64encode(encryptedPassword)
 
         response = self._request("UserLoginRequest.php", {
