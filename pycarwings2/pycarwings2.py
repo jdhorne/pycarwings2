@@ -71,7 +71,6 @@ from datetime import date
 from .responses import *
 import base64
 from Crypto.Cipher import Blowfish
-import binascii
 
 BASE_URL = "https://gdcportalgw.its-mo.com/api_v181217_NE/gdc/"
 
@@ -122,7 +121,7 @@ class Session(object):
 
         log.debug("invoking carwings API: %s" % req.url)
         log.debug("params: %s" % json.dumps(
-            { k: v.decode('utf-8') if isinstance(v, bytes) else v for k,v in params.items()},
+            {k: v.decode('utf-8') if isinstance(v, bytes) else v for k, v in params.items()},
             sort_keys=True, indent=3, separators=(',', ': '))
         )
 

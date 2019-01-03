@@ -17,6 +17,7 @@ username = parser.get('get-leaf-info', 'username')
 password = parser.get('get-leaf-info', 'password')
 region = parser.get('get-leaf-info', 'region')
 
+
 def print_info(info):
     print("  date %s" % info.answer["BatteryStatusRecords"]["OperationDateAndTime"])
     print("  date %s" % info.answer["BatteryStatusRecords"]["NotificationDateAndTime"])
@@ -39,7 +40,7 @@ def print_info(info):
 
 
 # Main program
-    
+
 logging.debug("login = %s, password = %s, region = %s" % (username, password, region))
 
 print("Prepare Session")
@@ -55,13 +56,13 @@ print_info(leaf_info)
 
 print("request an update from the car itself")
 result_key = leaf.request_update()
-update_source = "";
+update_source = ""
 
 while True:
     print("Waiting 10 seconds")
     time.sleep(10)  # sleep 60 seconds to give request time to process
     battery_status = leaf.get_status_from_update(result_key)
-    # The Nissan Servers seem to have changed. Previously a battery_status would eventually be returned 
+    # The Nissan Servers seem to have changed. Previously a battery_status would eventually be returned
     # from get_status_from_update(), now this always seems to return 0.
     # Checking for updates via get_latest_battery_status() seems to be the way to check if an update
     # has been provided to the Nissan servers.
