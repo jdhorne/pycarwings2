@@ -20,7 +20,7 @@ More details are located at the top of [pycarwings2.py](https://github.com/filco
 
 ## Example usage
 
-* Copy file ./examples/config.ini to ./examples/my_config.ini0
+* Copy file ./examples/config.ini to ./examples/my_config.ini
 * Edit my_config.ini and enter your username, password and region
 * Run python3 ./examples/get-leaf-info.py
 
