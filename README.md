@@ -11,6 +11,11 @@ Note that several of the most interesting methods in the CARWINGS service are
 asynchronous--you ask the service to do something, and it just says "ok". You then
 have to poll a corresponding method to find out if the operation was successful.
 
+Recently the polling has continued to return zero, yet when querying the data
+held on the Nissan servers a the last update date changes, indicating a response
+has been received from the car, see examples/get-leaf-info.py for how this can
+be handled.
+
 More details are located at the top of [pycarwings2.py](https://github.com/filcole/pycarwings2/blob/HomeAssistant/pycarwings2/pycarwings2.py).
 
 ## Installation
