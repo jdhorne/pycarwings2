@@ -1,9 +1,15 @@
 # pycarwings2
 
+[![Build Status](https://travis-ci.com/filcole/pycarwings2.svg?branch=master)](https://travis-ci.com/filcole/pycarwings2)
+
+Python3 version of the pycarwings2 library.
+
 Library for connecting and interacting with Nissan's CARWINGS service for Nissan LEAF cars.
 Uses the (newly secure!) REST/JSON API rather than the previous XML-based API.
 
-Inspired by original pycarwings library: https://github.com/haykinson/pycarwings
+Note: The US may use an entirely RESTful API as mentioned in [this gist by BenWoodford](https://gist.github.com/BenWoodford/141ca350445e994e69a70aabfb6db942) and [Issue 30](https://github.com/jdhorne/pycarwings2/issues/30)  Please report if this works in the US.  I am based in the UK.
+
+Inspired by original pycarwings library: https://github.com/haykinson/pycarwings including code from https://github.com/jdhorne/pycarwings2 and https://github.com/BenWoodford/pycarwings2
 
 ## Asynchronous methods
 
@@ -12,7 +18,7 @@ asynchronous--you ask the service to do something, and it just says "ok". You th
 have to poll a corresponding method to find out if the operation was successful.
 
 Recently the polling has continued to return zero, yet when querying the data
-held on the Nissan servers a the last update date changes, indicating a response
+held on the Nissan servers the last update date changes, indicating a response
 has been received from the car, see examples/get-leaf-info.py for how this can
 be handled.
 
