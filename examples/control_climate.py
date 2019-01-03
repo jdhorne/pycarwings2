@@ -3,7 +3,7 @@
 import pycarwings2
 import logging
 import sys
-from datetime import datetime
+from configparser import ConfigParser
 
 if len(sys.argv) < 2:
     print("Need input either 'start' or 'stop' as argument")
@@ -13,15 +13,18 @@ logging.basicConfig(stream=sys.stdout, level=logging.ERROR)
 
 # Put in username and path to your log-file.
 
-username = "username@dot.com"
-password = "xxxxxx"
-path = "/home/pi/scripts/"
+parser = ConfigParser()
+candidates = ['config.ini', 'my_config.ini']
+found = parser.read(candidates)
 
-##
-logging.debug("login = %s , password = %s" % (username, password))
+username = parser.get('get-leaf-info', 'username')
+password = parser.get('get-leaf-info', 'password')
+region = parser.get('get-leaf-info', 'region')
+
+logging.debug("login = %s, password = %s, region = %s" % (username, password, region))
 
 print("Prepare Session")
-s = pycarwings2.Session(username, password, "NE")
+s = pycarwings2.Session(username, password, region)
 print("Login...")
 leaf = s.get_leaf()
 
@@ -32,6 +35,3 @@ if str.lower(sys.argv[1]) == 'start':
 if str.lower(sys.argv[1]) == 'stop':
     print("Stopping climate control")
     result_key = leaf.stop_climate_control()
-
-with open(path + 'climate_control.log', 'a') as file:
-    file.write(datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ',' + str.lower(sys.argv[1]) + '\n')
