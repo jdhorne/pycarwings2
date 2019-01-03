@@ -16,11 +16,13 @@ More details are located at the top of [pycarwings2.py](https://github.com/filco
 ## Installation
 
     pip3 install requests pycryptodome configparser
-    pip3 install git+https://github.com/filcole/pycarwings2.git HomeAssistant
+    pip3 install git+https://github.com/filcole/pycarwings2.git
 
 ## Example usage
 
-./examples/get-leaf-info.py
+* Copy file ./examples/config.ini to ./examples/my_config.ini0
+* Edit my_config.ini and enter your username, password and region
+* Run python3 ./examples/get-leaf-info.py
 
 ## License
 

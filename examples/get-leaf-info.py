@@ -15,7 +15,7 @@ found = parser.read(candidates)
 
 username = parser.get('get-leaf-info', 'username')
 password = parser.get('get-leaf-info', 'password')
-
+region = parser.get('get-leaf-info', 'region')
 
 def print_info(info):
     print("  date %s" % info.answer["BatteryStatusRecords"]["OperationDateAndTime"])
@@ -40,10 +40,10 @@ def print_info(info):
 
 # Main program
     
-logging.debug("login = %s , password = %s" % (username, password))
+logging.debug("login = %s, password = %s, region = %s" % (username, password, region))
 
 print("Prepare Session")
-s = pycarwings2.Session(username, password, "NE")
+s = pycarwings2.Session(username, password, region)
 print("Login...")
 leaf = s.get_leaf()
 
