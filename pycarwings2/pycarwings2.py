@@ -134,6 +134,7 @@ class Session(object):
                 content=response.content))
         except RequestException:
             log.warning('HTTP Request failed')
+            raise CarwingsError
 
         j = json.loads(response.text)
 
