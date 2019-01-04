@@ -560,7 +560,11 @@ class CarwingsLatestBatteryStatusResponse(CarwingsResponse):
         else:
             self.time_to_full_l2_6kw = None
 
-        self.battery_percent = 100 * float(self.battery_remaining_amount) / float(self.battery_capacity)
+        if float(self.battery_capacity) == 0:
+            log.debug("battery_capacity=0, status=%s", status)
+            self.battery_percent = 0
+        else:
+            self.battery_percent = 100 * float(self.battery_remaining_amount) / float(self.battery_capacity)
 
         # Leaf 2016 has SOC (State Of Charge) in BatteryStatus, a more accurate battery_percentage
         if "SOC" in bs:
