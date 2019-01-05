@@ -40,6 +40,7 @@ setup(
     description='Python library for interacting with the Nissan Leaf Carwings telematics service',
     long_description=long_description,
     long_description_content_type='text/markdown',
+    license='Apache Software License',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
