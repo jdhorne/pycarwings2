@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 
 import pycarwings2
-import time
 from configparser import ConfigParser
 import logging
 import sys
-import pprint
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
