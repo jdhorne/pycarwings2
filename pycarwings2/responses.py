@@ -289,14 +289,14 @@ class CarwingsLatestClimateControlStatusResponse(CarwingsResponse):
             "status":200,
             "RemoteACRecords":{
                 "OperationResult":"ELECTRIC_WAVE_ABNORMAL",
-                "OperationDateAndTime":"2018/04/08 10:00
+                "OperationDateAndTime":"2018/04/08 10:00",
                 "RemoteACOperation":"START",
-                "ACStartStopDateAndTime":"08-Apr-2018 11:06'
+                "ACStartStopDateAndTime":"08-Apr-2018 11:06",
                 "ACStartStopURL":"",
                 "PluginState":"INVALID",
                 "ACDurationBatterySec":"900",
-                "ACDurationPluggedSec":"7200"
-                "PreAC_unit":"C"
+                "ACDurationPluggedSec":"7200",
+                "PreAC_unit":"C",
                 "PreAC_temp":"22"
             }
         }
