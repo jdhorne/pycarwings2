@@ -347,6 +347,8 @@ class Leaf:
             "ExecuteTime": date.today().isoformat()
         })
         if response["status"] == 200:
+            # This only indicates that the charging command has been received by the 
+            # Nissan servers, it does not indicate that the car is now charging.
             return True
 
         return False
