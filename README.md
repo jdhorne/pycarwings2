@@ -26,8 +26,7 @@ More details are located at the top of [pycarwings2.py](https://github.com/filco
 
 ## Installation
 
-    pip3 install requests pycryptodome configparser
-    pip3 install git+https://github.com/filcole/pycarwings2.git
+    pip3 install pycarwings2
 
 ## Example usage
 
