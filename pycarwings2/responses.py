@@ -300,6 +300,12 @@ class CarwingsLatestClimateControlStatusResponse(CarwingsResponse):
                 "PreAC_temp":"22"
             }
         }
+    noinfo (from a 2014 24kWh Leaf):
+        {
+            "status":200,
+            "RemoteACRecords":[]
+        }
+
     """
     def __init__(self, status):
         CarwingsResponse.__init__(self, status["RemoteACRecords"])
@@ -307,8 +313,10 @@ class CarwingsLatestClimateControlStatusResponse(CarwingsResponse):
 
         self._set_cruising_ranges(racr, on_key="CruisingRangeAcOn", off_key="CruisingRangeAcOff")
 
-        # seems to be running only if both of these contain "START"
+        # Seems to be running only if both of these contain "START".
+        # If no information is returned then assume CC is off.
         self.is_hvac_running = (
+            racr.length > 0 and
             racr["OperationResult"] and
             racr["OperationResult"].startswith("START") and
             racr["RemoteACOperation"] == "START"
