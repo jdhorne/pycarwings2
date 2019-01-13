@@ -14,4 +14,4 @@ def test_bad_password():
         leaf = s.get_leaf()
         if leaf is not None:
             pass
-        assert 'INVALID' in str(excinfo.value)
+    assert 'INVALID' in str(excinfo.value)
