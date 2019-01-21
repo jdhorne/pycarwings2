@@ -16,6 +16,7 @@ found = parser.read(candidates)
 username = parser.get('get-leaf-info', 'username')
 password = parser.get('get-leaf-info', 'password')
 region = parser.get('get-leaf-info', 'region')
+sleepsecs = 30     # Time to wait before polling Nissan servers for update
 
 
 def print_info(info):
@@ -59,8 +60,8 @@ result_key = leaf.request_update()
 update_source = ""
 
 while True:
-    print("Waiting 10 seconds")
-    time.sleep(10)  # sleep 60 seconds to give request time to process
+    print("Waiting {0} seconds".format(sleepsecs))
+    time.sleep(sleepsecs)  # sleep to give request time to process
     battery_status = leaf.get_status_from_update(result_key)
     # The Nissan Servers seem to have changed. Previously a battery_status would eventually be returned
     # from get_status_from_update(), now this always seems to return 0.
