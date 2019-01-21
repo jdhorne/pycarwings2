@@ -191,11 +191,11 @@ class CarwingsBatteryStatusResponse(CarwingsResponse):
             }
         }
 
-	# As at 21/01/2019 for a 30kWh Leaf now seems that
+        # As at 21/01/2019 for a 30kWh Leaf now seems that
         # BatteryStatusCheckResultRequest.php always returns this
         # regardless of battery status.
-	{
-	    "status":200,
+        {
+            "status":200,
             "responseFlag":"0"
         }
 
@@ -503,7 +503,7 @@ class CarwingsLatestBatteryStatusResponse(CarwingsResponse):
         }
 
         # not connected to a charger - as at 21/01/2019 20:01 (for a 30kWh leaf)
-	{
+        {
             "status":200,
             "BatteryStatusRecords": {
                 "OperationResult":"START",
