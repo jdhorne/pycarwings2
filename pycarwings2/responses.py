@@ -157,6 +157,11 @@ class CarwingsLoginResponse(CarwingsResponse):
 
 class CarwingsBatteryStatusResponse(CarwingsResponse):
     """
+        Note that before December 2018 this used to return a response.
+        Now it will never be called because "responseFlag" is always 0, so this object
+        will never be instanciated by pycarwings2.
+
+        # Original
         {
             "status": 200,
             "message": "success",
@@ -184,6 +189,14 @@ class CarwingsBatteryStatusResponse(CarwingsResponse):
                 "hours": "",
                 "minutes": ""
             }
+        }
+
+	# As at 21/01/2019 for a 30kWh Leaf now seems that
+        # BatteryStatusCheckResultRequest.php always returns this
+        # regardless of battery status.
+	{
+	    "status":200,
+            "responseFlag":"0"
         }
 
         {
@@ -216,6 +229,7 @@ class CarwingsBatteryStatusResponse(CarwingsResponse):
         }
     """
     def __init__(self, status):
+        log.info("CarwingsBatteryStatusResponse has data. Protocol change?")
         CarwingsResponse.__init__(self, status)
 
         self._set_timestamp(status)
@@ -240,8 +254,8 @@ class CarwingsBatteryStatusResponse(CarwingsResponse):
         self.time_to_full_l2 = timedelta(minutes=_time_remaining(status["timeRequiredToFull200"]))
         self.time_to_full_l2_6kw = timedelta(minutes=_time_remaining(status["timeRequiredToFull200_6kW"]))
 
-        # 2016-12: battery degradation is always 0-12 even if battery capacity is diminished.
-        self.battery_percent = 100 * float(status["batteryDegradation"]) / 12.0
+        # For some leafs the battery_percent is not returned
+        self.battery_percent = 100 * float(self.battery_degradation) / float(self.battery_capacity)
 
 
 class CarwingsLatestClimateControlStatusResponse(CarwingsResponse):
@@ -488,6 +502,43 @@ class CarwingsLatestBatteryStatusResponse(CarwingsResponse):
             }
         }
 
+        # not connected to a charger - as at 21/01/2019 20:01 (for a 30kWh leaf)
+	{
+            "status":200,
+            "BatteryStatusRecords": {
+                "OperationResult":"START",
+                "OperationDateAndTime":"21-Jan-2019 13:29",
+                "BatteryStatus":{
+                    "BatteryChargingStatus":"NOT_CHARGING",
+                    "BatteryCapacity":"240",
+                    "BatteryRemainingAmount":"220",
+                    "BatteryRemainingAmountWH":"24480",
+                    "BatteryRemainingAmountkWH":"",
+                    "SOC":{
+                        "Value":"91"
+                    }
+                },
+                "PluginState":"NOT_CONNECTED",
+                "CruisingRangeAcOn":"146000",
+                "CruisingRangeAcOff":"168000",
+                "TimeRequiredToFull":{
+                    "HourRequiredToFull":"4",
+                    "MinutesRequiredToFull":"30"
+                },
+                "TimeRequiredToFull200":{
+                    "HourRequiredToFull":"3"
+                    ,"MinutesRequiredToFull":"0"
+                },
+                "TimeRequiredToFull200_6kW":{
+                    "HourRequiredToFull":"1",
+                    "MinutesRequiredToFull":"30"
+                },
+                "NotificationDateAndTime":"2019/01/21 13:29",
+                "TargetDate":"2019/01/21 13:29"
+            }
+        }
+
+
         # connected to a quick charger
         {
             "status":200,
@@ -579,8 +630,8 @@ class CarwingsLatestBatteryStatusResponse(CarwingsResponse):
         # Leaf 2016 has SOC (State Of Charge) in BatteryStatus, a more accurate battery_percentage
         if "SOC" in bs:
             self.state_of_charge = bs["SOC"]["Value"]
-            # optional?
-            # self.battery_percent = self.soc
+            # Update battery_percent with more accurate version
+            self.battery_percent = self.state_of_charge
         else:
             self.state_of_charge = None
 

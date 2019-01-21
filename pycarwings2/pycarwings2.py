@@ -136,7 +136,22 @@ class Session(object):
             log.warning('HTTP Request failed')
             raise CarwingsError
 
-        j = json.loads(response.text)
+        # Nissan servers can return html instead of jSOn on occassion, e.g.
+        #
+        # <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//END>
+        # <html<head>
+        #    <title>503 Service Temporarily Unavailable</title>
+        # </head><body>
+        # <h1>Service Temporarily Unavailable>
+        # <p>The server is temporarily unable to service your
+        # request due to maintenance downtime or capacity
+        # problems. Please try again later.</p>
+        # </body></html>
+        try:
+            j = json.loads(response.text)
+        except ValueError:
+            log.error("Invalid JSON returned")
+            raise CarwingsError
 
         if "message" in j and j["message"] == "INVALID PARAMS":
             log.error("carwings error %s: %s" % (j["message"], j["status"]))
@@ -225,6 +240,7 @@ class Leaf:
             "resultKey": result_key,
         })
         # responseFlag will be "1" if a response has been returned; "0" otherwise
+        # As of Dec 2018 responseFlag is always returning 0!
         if response["responseFlag"] == "1":
             return CarwingsBatteryStatusResponse(response)
 
