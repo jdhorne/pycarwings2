@@ -56,7 +56,7 @@ setup(
         'PyYAML',
         'iso8601',
         'requests',
-        'pycryptodome>=3.7'],
+        'pycryptodome'],
     packages=find_packages(),
     setup_requires=('pytest-runner'),
     tests_require=['pytest', 'pytest-cov', 'pytest-flake8'],
