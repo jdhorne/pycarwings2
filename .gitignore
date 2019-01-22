@@ -30,6 +30,7 @@ lib64
 # Virtual environments
 bin/
 share/
+Scripts/
 pyvenv.cfg
 
 # PyInstaller
