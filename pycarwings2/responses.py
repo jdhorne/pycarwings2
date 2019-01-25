@@ -631,7 +631,7 @@ class CarwingsLatestBatteryStatusResponse(CarwingsResponse):
         if "SOC" in bs:
             self.state_of_charge = bs["SOC"]["Value"]
             # Update battery_percent with more accurate version
-            self.battery_percent = self.state_of_charge
+            self.battery_percent = float(self.state_of_charge)
         else:
             self.state_of_charge = None
 
