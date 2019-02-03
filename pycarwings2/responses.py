@@ -255,7 +255,7 @@ class CarwingsBatteryStatusResponse(CarwingsResponse):
         self.time_to_full_l2_6kw = timedelta(minutes=_time_remaining(status["timeRequiredToFull200_6kW"]))
 
         # For some leafs the battery_percent is not returned
-        self.battery_percent = 100 * float(self.battery_degradation) / float(self.battery_capacity)
+        self.battery_percent = 100 * float(self.battery_degradation) / 12
 
 
 class CarwingsLatestClimateControlStatusResponse(CarwingsResponse):
@@ -625,7 +625,7 @@ class CarwingsLatestBatteryStatusResponse(CarwingsResponse):
             log.debug("battery_capacity=0, status=%s", status)
             self.battery_percent = 0
         else:
-            self.battery_percent = 100 * float(self.battery_remaining_amount) / float(self.battery_capacity)
+            self.battery_percent = 100 * float(self.battery_remaining_amount) / 12
 
         # Leaf 2016 has SOC (State Of Charge) in BatteryStatus, a more accurate battery_percentage
         if "SOC" in bs:
