@@ -224,6 +224,46 @@ def test_get_latest_battery_status_24kWh_91percent_1degredation():
     assert status.battery_percent == 100 * 11 / 12
 
 
+def test_get_latest_battery_status_24kWh_100percent_1degredation():
+    # Not charging, but fully charged, 1 bar lost
+    batteryresponse = """
+{
+  "status":200,
+  "BatteryStatusRecords":{
+    "OperationResult":"START",
+    "OperationDateAndTime":"03-Feb-2019 23:50",
+    "BatteryStatus":{
+      "BatteryChargingStatus":"NOT_CHARGING",
+      "BatteryCapacity":"11",
+      "BatteryRemainingAmount":"12",
+      "BatteryRemainingAmountWH":"",
+      "BatteryRemainingAmountkWH":""
+    },
+    "PluginState":"NOT_CONNECTED",
+    "CruisingRangeAcOn":"116112.0",
+    "CruisingRangeAcOff":"131856.0",
+    "TimeRequiredToFull":{
+      "HourRequiredToFull":"0",
+      "MinutesRequiredToFull":"40"
+    },
+    "TimeRequiredToFull200":{
+      "HourRequiredToFull":"0",
+      "MinutesRequiredToFull":"40"
+    },
+    "TimeRequiredToFull200_6kW":{
+      "HourRequiredToFull":"0",
+      "MinutesRequiredToFull":"40"
+    },
+    "NotificationDateAndTime":"2019/02/03 22:50",
+    "TargetDate":"2019/02/03 22:50"
+  }
+}
+"""
+    response = json.loads(batteryresponse)
+    status = CarwingsLatestBatteryStatusResponse(response)
+    assert status.battery_percent == 100    # = 100 * 12 / 12
+
+
 def test_get_latest_battery_status_30kWh_91percent_0degredation():
     # not connected to a charger - as at 21/01/2019 20:01 (for a 30kWh leaf)
     batteryresponse = """
