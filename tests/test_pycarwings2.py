@@ -111,6 +111,60 @@ def test_get_latest_hvac_status_empty():
     assert not status.is_hvac_running
 
 
+def test_get_latest_hvac_status_no_ranges_off():
+    # Source: unknown leaf in Jan 2019
+    # Missing CruisingRangeAcOn and CruisingRangeAcOff
+    climateresponse = """
+{
+  "status": 200,
+  "RemoteACRecords": {
+    "OperationResult":"START",
+    "OperationDateAndTime":"2019/01/24 09:43",
+    "RemoteACOperation":"STOP",
+    "ACStartStopDateAndTime":"2019-jan-24 10:44",
+    "ACStartStopURL":"",
+    "PluginState":"NOT_CONNECTED",
+    "ACDurationBatterySec":"900",
+    "ACDurationPluggedSec ":"7200",
+    "PreAC_unit":"C",
+    "PreAC_temp":"22",
+    "Inc_temp ":"12"
+  }
+}
+"""
+    # Climate control should be off
+    response = json.loads(climateresponse)
+    status = CarwingsLatestClimateControlStatusResponse(response)
+    assert not status.is_hvac_running
+
+
+def test_get_latest_hvac_status_no_ranges_on():
+    # Source: unknown leaf in Jan 2019
+    # Missing CruisingRangeAcOn and CruisingRangeAcOff
+    climateresponse = """
+{
+  "status": 200,
+  "RemoteACRecords": {
+    "OperationResult":"START",
+    "OperationDateAndTime":"2019/01/24 09:43",
+    "RemoteACOperation":"START",
+    "ACStartStopDateAndTime":"2019-jan-24 10:44",
+    "ACStartStopURL":"",
+    "PluginState":"NOT_CONNECTED",
+    "ACDurationBatterySec":"900",
+    "ACDurationPluggedSec ":"7200",
+    "PreAC_unit":"C",
+    "PreAC_temp":"22",
+    "Inc_temp ":"12"
+  }
+}
+"""
+    # Assume climate control should be on
+    response = json.loads(climateresponse)
+    status = CarwingsLatestClimateControlStatusResponse(response)
+    assert status.is_hvac_running
+
+
 def test_get_latest_battery_status_24kWh_30percent_0degredation():
     # not connected to a charger
     batteryresponse = """
