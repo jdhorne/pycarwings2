@@ -73,7 +73,7 @@ import base64
 from Crypto.Cipher import Blowfish
 import binascii
 
-BASE_URL = "https://gdcportalgw.its-mo.com/gworchest_160803A/gdc/"
+BASE_URL = "https://gdcportalgw.its-mo.com/api_v190426_NE/gdc/"
 
 log = logging.getLogger(__name__)
 
@@ -110,7 +110,7 @@ class Session(object):
 
 
 	def _request(self, endpoint, params):
-		params["initial_app_strings"] = "geORNtsZe5I4lRGjG9GZiA"
+		params["initial_app_str"] = "9s5rfKVuMrT03RtzajWNcA"
 		if self.custom_sessionid:
 			params["custom_sessionid"] = self.custom_sessionid
 		else:
@@ -146,7 +146,7 @@ class Session(object):
 		self.custom_sessionid = None
 		self.logged_in = False
 
-		response = self._request("InitialApp.php", {
+		response = self._request("InitialApp_v2.php", {
 			"RegionCode": self.region_code,
 			"lg": "en-US",
 		})
