@@ -71,10 +71,12 @@ from datetime import date
 from .responses import *
 import base64
 from Crypto.Cipher import Blowfish
+import time
 
 BASE_URL = "https://gdcportalgw.its-mo.com/api_v190426_NE/gdc/"
 
 log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
 
 
 # from http://stackoverflow.com/questions/17134100/python-blowfish-encryption
@@ -103,7 +105,8 @@ class Session(object):
         ret = self._request(endpoint, params)
 
         if ("status" in ret) and (ret["status"] >= 400):
-            log.error("carwings error; logging in and trying request again: %s" % ret)
+            log.error(
+                "carwings error; logging in and trying request again: %s" % ret)
             # try logging in again
             self.connect()
             ret = self._request(endpoint, params)
@@ -121,7 +124,8 @@ class Session(object):
 
         log.debug("invoking carwings API: %s" % req.url)
         log.debug("params: %s" % json.dumps(
-            {k: v.decode('utf-8') if isinstance(v, bytes) else v for k, v in params.items()},
+            {k: v.decode('utf-8') if isinstance(v, bytes)
+             else v for k, v in params.items()},
             sort_keys=True, indent=3, separators=(',', ': '))
         )
 
@@ -157,7 +161,8 @@ class Session(object):
             log.error("carwings error %s: %s" % (j["message"], j["status"]))
             raise CarwingsError("INVALID PARAMS")
         if "ErrorMessage" in j:
-            log.error("carwings error %s: %s" % (j["ErrorCode"], j["ErrorMessage"]))
+            log.error("carwings error %s: %s" %
+                      (j["ErrorCode"], j["ErrorMessage"]))
             raise CarwingsError
 
         return j
@@ -222,11 +227,7 @@ class Leaf:
     def request_update(self):
         response = self.session._request_with_retry("BatteryStatusCheckRequest.php", {
             "RegionCode": self.session.region_code,
-            "lg": self.session.language,
-            "DCMID": self.session.dcm_id,
             "VIN": self.vin,
-            "tz": self.session.tz,
-            "UserId": self.session.gdc_user_id,     # this userid is the 'gdc' userid
         })
         return response["resultKey"]
 
@@ -240,11 +241,18 @@ class Leaf:
             "resultKey": result_key,
         })
         # responseFlag will be "1" if a response has been returned; "0" otherwise
-        # As of Dec 2018 responseFlag is always returning 0!
         if response["responseFlag"] == "1":
             return CarwingsBatteryStatusResponse(response)
 
         return None
+
+    def update_battery_status(self, wait_time=1):
+        key = self.request_update()
+        status = self.get_status_from_update(key)
+        while status is None:
+            time.sleep(wait_time)
+            status = self.get_status_from_update(key)
+        return status
 
     def start_climate_control(self):
         response = self.session._request_with_retry("ACRemoteRequest.php", {
@@ -353,6 +361,7 @@ class Leaf:
         "status":200,
     }
     """
+
     def start_charging(self):
         response = self.session._request_with_retry("BatteryRemoteChargingRequest.php", {
             "RegionCode": self.session.region_code,

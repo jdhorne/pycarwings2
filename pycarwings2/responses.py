@@ -157,9 +157,6 @@ class CarwingsLoginResponse(CarwingsResponse):
 
 class CarwingsBatteryStatusResponse(CarwingsResponse):
     """
-        Note that before December 2018 this used to return a response.
-        Now it will never be called because "responseFlag" is always 0, so this object
-        will never be instanciated by pycarwings2.
 
         # Original
         {
@@ -229,7 +226,6 @@ class CarwingsBatteryStatusResponse(CarwingsResponse):
         }
     """
     def __init__(self, status):
-        log.info("CarwingsBatteryStatusResponse has data. Protocol change?")
         CarwingsResponse.__init__(self, status)
 
         self._set_timestamp(status)
