@@ -5,7 +5,6 @@ import time
 from configparser import ConfigParser
 import logging
 import sys
-import pprint
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
@@ -17,6 +16,18 @@ username = parser.get('get-leaf-info', 'username')
 password = parser.get('get-leaf-info', 'password')
 region = parser.get('get-leaf-info', 'region')
 sleepsecs = 30     # Time to wait before polling Nissan servers for update
+
+
+def update_battery_status(leaf, wait_time=1):
+    key = leaf.request_update()
+    status = leaf.get_status_from_update(key)
+    # Currently the nissan servers eventually return status 200 from get_status_from_update(), previously
+    # they did not, and it was necessary to check the date returned within get_latest_battery_status().
+    while status is None:
+        print("Waiting {0} seconds".format(sleepsecs))
+        time.sleep(wait_time)
+        status = leaf.get_status_from_update(key)
+    return status
 
 
 def print_info(info):
@@ -49,48 +60,23 @@ s = pycarwings2.Session(username, password, region)
 print("Login...")
 leaf = s.get_leaf()
 
+# Give the nissan servers a bit of a delay so that we don't get stale data
+time.sleep(1)
+
 print("get_latest_battery_status from servers")
 leaf_info = leaf.get_latest_battery_status()
 start_date = leaf_info.answer["BatteryStatusRecords"]["OperationDateAndTime"]
 print("start_date=", start_date)
 print_info(leaf_info)
 
+# Give the nissan servers a bit of a delay so that we don't get stale data
+time.sleep(1)
+
 print("request an update from the car itself")
-result_key = leaf.request_update()
-update_source = ""
 
-while True:
-    print("Waiting {0} seconds".format(sleepsecs))
-    time.sleep(sleepsecs)  # sleep to give request time to process
-    battery_status = leaf.get_status_from_update(result_key)
-    # The Nissan Servers seem to have changed. Previously a battery_status would eventually be returned
-    # from get_status_from_update(), now this always seems to return 0.
-    # Checking for updates via get_latest_battery_status() seems to be the way to check if an update
-    # has been provided to the Nissan servers.
-    if battery_status is None:
-        print("No update, see latest_battery_status has changed")
-        latest_leaf_info = leaf.get_latest_battery_status()
-        latest_date = latest_leaf_info.answer["BatteryStatusRecords"]["OperationDateAndTime"]
-        print("latest_date=", latest_date)
-        if (latest_date != start_date):
-            print("Latest info has updated we'll use that instead of waiting for get_status_from_update to respond")
-            update_source = "get_latest_battery_status"
-            break
-    else:
-        update_source = "get_status_from_update"
-        break
+update_status = update_battery_status(leaf, sleepsecs)
 
-if update_source == "get_status_from_update":
-    pprint.pprint(battery_status.answer)
-elif update_source == "get_latest_battery_status":
-    print_info(latest_leaf_info)
-
-exit()
-
-# result_key = leaf.start_climate_control()
-# time.sleep(60)
-# start_cc_result = leaf.get_start_climate_control_result(result_key)
-
-# result_key = leaf.stop_climate_control()
-# time.sleep(60)
-# stop_cc_result = leaf.get_stop_climate_control_result(result_key)
+latest_leaf_info = leaf.get_latest_battery_status()
+latest_date = latest_leaf_info.answer["BatteryStatusRecords"]["OperationDateAndTime"]
+print("latest_date=", latest_date)
+print_info(latest_leaf_info)

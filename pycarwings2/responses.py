@@ -157,9 +157,9 @@ class CarwingsLoginResponse(CarwingsResponse):
 
 class CarwingsBatteryStatusResponse(CarwingsResponse):
     """
-        Note that before December 2018 this used to return a response.
-        Now it will never be called because "responseFlag" is always 0, so this object
-        will never be instanciated by pycarwings2.
+        Note that before December 2018 this returned a response. Between Dec-2018 and Aug-2019
+        it did not return a response from the Nissan Servers.  As of Aug 2019 a response is now
+        returned again.
 
         # Original
         {
@@ -227,9 +227,40 @@ class CarwingsBatteryStatusResponse(CarwingsResponse):
                 "minutes":""
             }
         }
+
+        # As at 22/08/2019 for a 30kWh Leaf now seesm that
+        # BatteryStatusCheckResultRequest.php returns data again
+        # after polling a number of times.
+        {
+                "status": 200,
+                "responseFlag": "1",
+                "operationResult": "START",
+                "timeStamp": "2019-08-22 10:26:51",
+                "cruisingRangeAcOn": "129000.0",
+                "cruisingRangeAcOff": "132000.0",
+                "currentChargeLevel": "0",
+                "chargeMode": "NOT_CHARGING",
+                "pluginState": "NOT_CONNECTED",
+                "charging": "NO",
+                "chargeStatus": "0",
+                "batteryDegradation": "180",
+                "batteryCapacity": "240",
+                "timeRequiredToFull": {
+                        "hours": "11",
+                        "minutes": "30"
+                },
+                "timeRequiredToFull200": {
+                        "hours": "6",
+                        "minutes": "30"
+                },
+                "timeRequiredToFull200_6kW": {
+                        "hours": "2",
+                        "minutes": "30"
+                }
+        }
+
     """
     def __init__(self, status):
-        log.info("CarwingsBatteryStatusResponse has data. Protocol change?")
         CarwingsResponse.__init__(self, status)
 
         self._set_timestamp(status)
