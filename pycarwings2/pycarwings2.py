@@ -71,12 +71,10 @@ from datetime import date
 from .responses import *
 import base64
 from Crypto.Cipher import Blowfish
-import time
 
 BASE_URL = "https://gdcportalgw.its-mo.com/api_v190426_NE/gdc/"
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
 
 
 # from http://stackoverflow.com/questions/17134100/python-blowfish-encryption
@@ -245,14 +243,6 @@ class Leaf:
             return CarwingsBatteryStatusResponse(response)
 
         return None
-
-    def update_battery_status(self, wait_time=1):
-        key = self.request_update()
-        status = self.get_status_from_update(key)
-        while status is None:
-            time.sleep(wait_time)
-            status = self.get_status_from_update(key)
-        return status
 
     def start_climate_control(self):
         response = self.session._request_with_retry("ACRemoteRequest.php", {
@@ -441,6 +431,10 @@ class Leaf:
         return None
 
     def request_location(self):
+        # As of 25th July the Locate My Vehicle functionality of the Europe version of the
+        # Nissan APIs was removed.  It may return, so this call is left here.
+        # It currently errors with a 404 MyCarFinderRequest.php was not found on this server
+        # for European users.
         response = self.session._request_with_retry("MyCarFinderRequest.php", {
             "RegionCode": self.session.region_code,
             "lg": self.session.language,
