@@ -228,36 +228,36 @@ class CarwingsBatteryStatusResponse(CarwingsResponse):
             }
         }
 
-        # As at 22/08/2019 for a 30kWh Leaf now seesm that 
+        # As at 22/08/2019 for a 30kWh Leaf now seesm that
         # BatteryStatusCheckResultRequest.php returns data again
         # after polling a number of times.
-	{
-		"status": 200,
-		"responseFlag": "1",
-		"operationResult": "START",
-		"timeStamp": "2019-08-22 10:26:51",
-		"cruisingRangeAcOn": "129000.0",
-		"cruisingRangeAcOff": "132000.0",
-		"currentChargeLevel": "0",
-		"chargeMode": "NOT_CHARGING",
-		"pluginState": "NOT_CONNECTED",
-		"charging": "NO",
-		"chargeStatus": "0",
-		"batteryDegradation": "180",
-		"batteryCapacity": "240",
-		"timeRequiredToFull": {
-			"hours": "11",
-			"minutes": "30"
-		},
-		"timeRequiredToFull200": {
-			"hours": "6",
-			"minutes": "30"
-		},
-		"timeRequiredToFull200_6kW": {
-			"hours": "2",
-			"minutes": "30"
-		}
-	}
+        {
+                "status": 200,
+                "responseFlag": "1",
+                "operationResult": "START",
+                "timeStamp": "2019-08-22 10:26:51",
+                "cruisingRangeAcOn": "129000.0",
+                "cruisingRangeAcOff": "132000.0",
+                "currentChargeLevel": "0",
+                "chargeMode": "NOT_CHARGING",
+                "pluginState": "NOT_CONNECTED",
+                "charging": "NO",
+                "chargeStatus": "0",
+                "batteryDegradation": "180",
+                "batteryCapacity": "240",
+                "timeRequiredToFull": {
+                        "hours": "11",
+                        "minutes": "30"
+                },
+                "timeRequiredToFull200": {
+                        "hours": "6",
+                        "minutes": "30"
+                },
+                "timeRequiredToFull200_6kW": {
+                        "hours": "2",
+                        "minutes": "30"
+                }
+        }
 
     """
     def __init__(self, status):
