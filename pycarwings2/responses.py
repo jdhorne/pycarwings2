@@ -675,7 +675,7 @@ class CarwingsElectricRateSimulationResponse(CarwingsResponse):
         t = r["PriceSimulatorTotalInfo"]
 
         self.month = r["DisplayMonth"]     # e.g. "Feb/2016"
-
+        self.travellist = r["PriceSimulatorDetailInfoDateList"]["PriceSimulatorDetailInfoDate"]
         self.total_number_of_trips = t["TotalNumberOfTrips"]
         self.total_power_consumption = t["TotalPowerConsumptTotal"]                # in kWh
         self.total_acceleration_power_consumption = t["TotalPowerConsumptMoter"]   # in kWh
