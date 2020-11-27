@@ -118,7 +118,8 @@ class Session(object):
         else:
             params["custom_sessionid"] = ""
 
-        req = Request('POST',
+        req = Request(
+            'POST',
             url=BASE_URL + endpoint,
             data=params,
             headers={"User-Agent": ""}
