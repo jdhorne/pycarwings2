@@ -122,7 +122,7 @@ class Session(object):
             url=BASE_URL + endpoint,
             data=params,
             headers={"User-Agent": ""}
-            ).prepare()
+        ).prepare()
 
         log.debug("invoking carwings API: %s" % req.url)
         log.debug("params: %s" % json.dumps(
