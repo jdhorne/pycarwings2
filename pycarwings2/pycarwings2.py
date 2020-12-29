@@ -122,7 +122,7 @@ class Session(object):
             'POST',
             url=BASE_URL + endpoint,
             data=params,
-            headers={"User-Agent": ""}
+            headers={"User-Agent": "pycarwings2/2.10"}
         ).prepare()
 
         log.debug("invoking carwings API: %s" % req.url)
